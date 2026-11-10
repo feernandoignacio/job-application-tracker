@@ -18,6 +18,10 @@
   color: rgba(31, 31, 31, 0.7);
 }
 
+.application-form .full-width {
+  grid-column: 1 / -1;
+}
+
 .application-form input,
 .application-form select {
   padding: 8px 10px;

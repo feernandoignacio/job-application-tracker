@@ -12,6 +12,7 @@ function ApplicationForm({ onAdd }: ApplicationFormProps) {
   const [company, setCompany] = useState('');
   const [position, setPosition] = useState('');
   const [status, setStatus] = useState<ApplicationStatus>('applied');
+  const [jobUrl, setJobUrl] = useState('');
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     // Impede a página de recarregar (igual ao seu e.preventDefault())
@@ -24,6 +25,8 @@ function ApplicationForm({ onAdd }: ApplicationFormProps) {
       status,
       // Data de hoje no formato AAAA-MM-DD
       appliedAt: new Date().toLocaleDateString('en-CA'),
+      // Se o campo ficou vazio, não guarda link nenhum
+      jobUrl: jobUrl.trim() || undefined,
     };
 
     onAdd(newApplication);
@@ -32,6 +35,7 @@ function ApplicationForm({ onAdd }: ApplicationFormProps) {
     setCompany('');
     setPosition('');
     setStatus('applied');
+    setJobUrl('');
   }
 
   return (
@@ -69,6 +73,16 @@ function ApplicationForm({ onAdd }: ApplicationFormProps) {
           <option value="offer">Offer</option>
           <option value="rejected">Rejected</option>
         </select>
+      </label>
+
+      <label className="full-width">
+        Job URL (optional)
+        <input
+          type="url"
+          value={jobUrl}
+          onChange={(event) => setJobUrl(event.target.value)}
+          placeholder="https://"
+        />
       </label>
 
       <button type="submit">Add application</button>
