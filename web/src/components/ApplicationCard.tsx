@@ -1,4 +1,5 @@
 import type { Application } from '../types/application';
+import './ApplicationCard.css';
 
 // O que este componente recebe de fora (as "props")
 type ApplicationCardProps = {
@@ -7,10 +8,12 @@ type ApplicationCardProps = {
 
 function ApplicationCard({ application }: ApplicationCardProps) {
   return (
-    <li>
-      <strong>{application.company}</strong>
-      <span>{application.position}</span>
-      <span>{application.status}</span>
+    <li className="application-card">
+      <strong className="application-company">{application.company}</strong>
+      <span className="application-position">{application.position}</span>
+      <span className={`status status-${application.status}`}>
+        {application.status}
+      </span>
     </li>
   );
 }
