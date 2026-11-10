@@ -1,3 +1,4 @@
+import ApplicationCard from './components/ApplicationCard';
 import { sampleApplications } from './data/sampleApplications';
 
 function App() {
@@ -8,11 +9,7 @@ function App() {
 
       <ul>
         {sampleApplications.map((application) => (
-          <li key={application.id}>
-            <strong>{application.company}</strong>
-            <span>{application.position}</span>
-            <span>{application.status}</span>
-          </li>
+          <ApplicationCard key={application.id} application={application} />
         ))}
       </ul>
     </main>
