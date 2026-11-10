@@ -53,6 +53,15 @@ function App() {
     );
   }
 
+  // Troca o status da candidatura que tem este id
+  function handleStatusChange(id: string, status: ApplicationStatus) {
+    setApplications(
+      applications.map((application) =>
+        application.id === id ? { ...application, status } : application,
+      ),
+    );
+  }
+
   // Adiciona a nova candidatura no começo da lista
   function handleAdd(newApplication: Application) {
     setApplications([newApplication, ...applications]);
@@ -93,6 +102,7 @@ function App() {
               key={application.id}
               application={application}
               onDelete={handleDelete}
+              onStatusChange={handleStatusChange}
             />
           ))}
         </ul>
