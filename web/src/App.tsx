@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ApplicationCard from './components/ApplicationCard';
 import ApplicationForm from './components/ApplicationForm';
 import { sampleApplications } from './data/sampleApplications';
@@ -7,6 +7,15 @@ import './App.css';
 
 // O filtro pode ser "todos" ou um dos status
 type StatusFilter = 'all' | ApplicationStatus;
+
+// Nome da "gaveta" onde a lista fica guardada no navegador
+const STORAGE_KEY = 'job-applications';
+
+// Lê a lista salva; se não tiver nada, usa os exemplos
+function loadApplications(): Application[] {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  return saved ? JSON.parse(saved) : sampleApplications;
+}
 
 const filters: StatusFilter[] = [
   'all',
@@ -17,9 +26,14 @@ const filters: StatusFilter[] = [
 ];
 
 function App() {
-  // Lista de candidaturas (começa com os exemplos)
+  // Lista de candidaturas (começa com o que estiver salvo)
   const [applications, setApplications] =
-    useState<Application[]>(sampleApplications);
+    useState<Application[]>(loadApplications);
+
+  // Sempre que a lista mudar, salva no navegador
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(applications));
+  }, [applications]);
 
   // Filtro escolhido no momento (começa em "todos")
   const [selectedStatus, setSelectedStatus] = useState<StatusFilter>('all');
