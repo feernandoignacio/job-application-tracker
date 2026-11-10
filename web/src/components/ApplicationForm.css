@@ -1,0 +1,51 @@
+.application-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr 160px;
+  gap: 12px;
+  align-items: end;
+  margin-bottom: 32px;
+  padding: 20px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+}
+
+.application-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: rgba(31, 31, 31, 0.7);
+}
+
+.application-form input,
+.application-form select {
+  padding: 8px 10px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 6px;
+  font: inherit;
+  font-size: 0.95rem;
+  color: #1f1f1f;
+}
+
+.application-form button {
+  grid-column: 1 / -1;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  background: #1f1f1f;
+  color: #ffffff;
+  font: inherit;
+  cursor: pointer;
+}
+
+.application-form button:hover {
+  background: #3a3a3a;
+}
+
+/* Telas pequenas: um campo embaixo do outro */
+@media (max-width: 600px) {
+  .application-form {
+    grid-template-columns: 1fr;
+  }
+}

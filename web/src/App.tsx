@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import ApplicationCard from './components/ApplicationCard';
+import ApplicationForm from './components/ApplicationForm';
 import { sampleApplications } from './data/sampleApplications';
 import type { Application, ApplicationStatus } from './types/application';
 import './App.css';
@@ -38,12 +39,19 @@ function App() {
     );
   }
 
+  // Adiciona a nova candidatura no começo da lista
+  function handleAdd(newApplication: Application) {
+    setApplications([newApplication, ...applications]);
+  }
+
   return (
     <main className="app">
       <header className="app-header">
         <h1>Job Application Tracker</h1>
         <p>Track every job application in one place.</p>
       </header>
+
+      <ApplicationForm onAdd={handleAdd} />
 
       <nav className="status-filter" aria-label="Filter by status">
         {filters.map((filter) => (
