@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import ApplicationCard from './components/ApplicationCard';
 import { sampleApplications } from './data/sampleApplications';
-import type { ApplicationStatus } from './types/application';
+import type { Application, ApplicationStatus } from './types/application';
 import './App.css';
 
 // O filtro pode ser "todos" ou um dos status
@@ -16,16 +16,27 @@ const filters: StatusFilter[] = [
 ];
 
 function App() {
+  // Lista de candidaturas (começa com os exemplos)
+  const [applications, setApplications] =
+    useState<Application[]>(sampleApplications);
+
   // Filtro escolhido no momento (começa em "todos")
   const [selectedStatus, setSelectedStatus] = useState<StatusFilter>('all');
 
   // Candidaturas que aparecem na tela, de acordo com o filtro
   const visibleApplications =
     selectedStatus === 'all'
-      ? sampleApplications
-      : sampleApplications.filter(
+      ? applications
+      : applications.filter(
           (application) => application.status === selectedStatus,
         );
+
+  // Remove a candidatura que tem este id
+  function handleDelete(id: string) {
+    setApplications(
+      applications.filter((application) => application.id !== id),
+    );
+  }
 
   return (
     <main className="app">
@@ -56,7 +67,11 @@ function App() {
       ) : (
         <ul className="application-list">
           {visibleApplications.map((application) => (
-            <ApplicationCard key={application.id} application={application} />
+            <ApplicationCard
+              key={application.id}
+              application={application}
+              onDelete={handleDelete}
+            />
           ))}
         </ul>
       )}

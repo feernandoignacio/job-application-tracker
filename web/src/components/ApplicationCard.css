@@ -6,6 +6,7 @@
   background: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 10px;
+  position: relative;
 }
 
 .application-company {
@@ -45,4 +46,23 @@
 .status-rejected {
   background: #fde2e2;
   color: #a12828;
+}
+
+/* Botão de apagar */
+.delete-button {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  padding: 4px 10px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 6px;
+  background: transparent;
+  font: inherit;
+  font-size: 0.8rem;
+  color: #a12828;
+  cursor: pointer;
+}
+
+.delete-button:hover {
+  background: #fde2e2;
 }
