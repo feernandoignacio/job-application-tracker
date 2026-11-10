@@ -38,13 +38,16 @@ function App() {
   // Filtro escolhido no momento (começa em "todos")
   const [selectedStatus, setSelectedStatus] = useState<StatusFilter>('all');
 
-  // Candidaturas que aparecem na tela, de acordo com o filtro
-  const visibleApplications =
-    selectedStatus === 'all'
-      ? applications
-      : applications.filter(
-          (application) => application.status === selectedStatus,
-        );
+  // Devolve as candidaturas que combinam com um filtro
+  function filterApplications(filter: StatusFilter) {
+    if (filter === 'all') {
+      return applications;
+    }
+    return applications.filter((application) => application.status === filter);
+  }
+
+  // Candidaturas que aparecem na tela, de acordo com o filtro escolhido
+  const visibleApplications = filterApplications(selectedStatus);
 
   // Remove a candidatura que tem este id
   function handleDelete(id: string) {
@@ -89,6 +92,9 @@ function App() {
             onClick={() => setSelectedStatus(filter)}
           >
             {filter}
+            <span className="filter-count">
+              {filterApplications(filter).length}
+            </span>
           </button>
         ))}
       </nav>

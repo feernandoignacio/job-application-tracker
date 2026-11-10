@@ -49,6 +49,12 @@
   color: #ffffff;
 }
 
+/* Número ao lado de cada filtro */
+.filter-count {
+  margin-left: 6px;
+  opacity: 0.6;
+}
+
 .empty-message {
   color: rgba(31, 31, 31, 0.6);
 }
