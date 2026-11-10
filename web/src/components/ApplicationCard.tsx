@@ -1,4 +1,5 @@
 import type { Application, ApplicationStatus } from '../types/application';
+import { formatDate } from '../utils/formatDate';
 import './ApplicationCard.css';
 
 // O que este componente recebe de fora (as "props")
@@ -17,6 +18,21 @@ function ApplicationCard({
     <li className="application-card">
       <strong className="application-company">{application.company}</strong>
       <span className="application-position">{application.position}</span>
+
+      <span className="application-date">
+        Applied on {formatDate(application.appliedAt)}
+      </span>
+
+      {application.jobUrl && (
+        <a
+          className="application-link"
+          href={application.jobUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          View job
+        </a>
+      )}
 
       <select
         className={`status status-${application.status}`}
