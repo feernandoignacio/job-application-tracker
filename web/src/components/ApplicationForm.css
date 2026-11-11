@@ -1,6 +1,7 @@
 .application-form {
   display: grid;
-  grid-template-columns: 1fr 1fr 160px;
+  /* minmax(0, 1fr) deixa a coluna encolher sem estourar o card */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 160px;
   gap: 12px;
   align-items: end;
   margin-bottom: 32px;
