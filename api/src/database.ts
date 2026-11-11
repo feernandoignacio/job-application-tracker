@@ -1,10 +1,17 @@
-import { DatabaseSync } from 'node:sqlite';
+import pg from 'pg';
 
-// Abre (ou cria, se não existir) o arquivo do banco
-export const db = new DatabaseSync('data.db');
+// O endereço do banco vem do arquivo .env (nunca fica no código)
+const connectionString = process.env.DATABASE_URL;
+
+if (!connectionString) {
+  throw new Error('DATABASE_URL is missing. Create the api/.env file.');
+}
+
+// Pool = um grupo de conexões abertas que as rotas vão reaproveitando
+export const db = new pg.Pool({ connectionString });
 
 // Cria as tabelas na primeira vez que a API roda
-db.exec(`
+await db.query(`
   CREATE TABLE IF NOT EXISTS users (
     id TEXT PRIMARY KEY,
     email TEXT NOT NULL UNIQUE,
@@ -13,7 +20,7 @@ db.exec(`
   )
 `);
 
-db.exec(`
+await db.query(`
   CREATE TABLE IF NOT EXISTS sessions (
     token_hash TEXT PRIMARY KEY,
     user_id TEXT NOT NULL REFERENCES users(id),
@@ -21,7 +28,7 @@ db.exec(`
   )
 `);
 
-db.exec(`
+await db.query(`
   CREATE TABLE IF NOT EXISTS applications (
     id TEXT PRIMARY KEY,
     user_id TEXT NOT NULL REFERENCES users(id),
@@ -30,6 +37,7 @@ db.exec(`
     status TEXT NOT NULL,
     applied_at TEXT NOT NULL,
     job_url TEXT,
-    notes TEXT
+    notes TEXT,
+    created_at TEXT NOT NULL
   )
 `);
