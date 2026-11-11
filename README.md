@@ -1,5 +1,7 @@
 # Job Application Tracker
 
+[![CI](https://github.com/feernandoignacio/job-application-tracker/actions/workflows/ci.yml/badge.svg)](https://github.com/feernandoignacio/job-application-tracker/actions/workflows/ci.yml)
+
 A full stack web application to organize and track job applications. Each user creates an account and manages their own applications, stored in a PostgreSQL database.
 
 **Live demo:** https://lucas-job-tracker.vercel.app
@@ -9,8 +11,9 @@ A full stack web application to organize and track job applications. Each user c
 - Sign up and log in with email and password
 - Add applications with company, position, status and job link
 - Change the status of an application directly from its card
+- Edit the details of an application and keep notes for each one
 - Filter applications by status, with a count for each one
-- Delete applications
+- Delete applications, with a confirmation step
 - Log out from any device, which invalidates the session token
 - Each user only sees their own applications
 - Responsive layout for desktop and mobile
@@ -33,6 +36,7 @@ A full stack web application to organize and track job applications. Each user c
 **Tools**
 
 - Vercel (deploy of the front end and the API)
+- Node.js test runner and GitHub Actions (CI)
 - Prettier and Oxlint
 
 ## Architecture
@@ -52,6 +56,7 @@ The front end calls `/api/...` and Vercel forwards these requests to the API. In
 - Passwords are hashed with **scrypt** and a random salt, so they are never stored in plain text
 - Login returns a random session token. Only its **SHA-256 hash** is stored in the database
 - Sessions expire after 30 days, and logging out deletes the session
+- After 5 wrong passwords in 15 minutes, the email is blocked for 15 minutes. The attempts are stored in the database, so the limit works even with several instances of the API running
 - Protected routes check the `Authorization: Bearer <token>` header in a middleware
 - Every query filters by the logged user, so one user can't read or change another user's data (the API answers 404 instead of 403 to avoid revealing which ids exist)
 - All SQL queries use parameters (`$1, $2...`) to prevent SQL injection
@@ -67,7 +72,7 @@ The front end calls `/api/...` and Vercel forwards these requests to the API. In
 | POST   | `/auth/logout`      | Yes  | Deletes the current session   |
 | GET    | `/applications`     | Yes  | Lists the user's applications |
 | POST   | `/applications`     | Yes  | Creates an application        |
-| PATCH  | `/applications/:id` | Yes  | Updates the status            |
+| PATCH  | `/applications/:id` | Yes  | Updates the sent fields       |
 | DELETE | `/applications/:id` | Yes  | Deletes an application        |
 
 ## Running locally
@@ -100,6 +105,17 @@ npm run dev
 
 Then open http://localhost:5173.
 
+## Tests
+
+The API has integration tests that start the server and call the real routes against a PostgreSQL database. They cover sign up, login, the login attempts limit, the CRUD of applications, logout and, most important, that one user can't read or change another user's data.
+
+```bash
+cd api
+npm test
+```
+
+To run them locally, create an `api/.env.test` file with the URL of a database used only for tests. On every push, GitHub Actions runs the tests with a temporary PostgreSQL, checks the types and the formatting, and builds the front end.
+
 ## Project structure
 
 ```
@@ -113,9 +129,9 @@ job-application-tracker/
 - [x] REST API with Node.js
 - [x] Authentication with sessions
 - [x] PostgreSQL database
-- [ ] Edit application details
-- [ ] Notes for each application
-- [ ] Limit login attempts
-- [ ] Automated tests and CI
+- [x] Edit application details
+- [x] Notes for each application
+- [x] Limit login attempts
+- [x] Automated tests and CI
 - [ ] Sign in with Google
 - [ ] New visual design

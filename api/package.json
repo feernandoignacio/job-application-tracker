@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "node --env-file=.env --watch src/server.ts",
     "start": "node src/server.ts",
+    "test": "node --env-file-if-exists=.env.test --test test/*.test.ts",
     "typecheck": "tsc"
   },
   "keywords": [],
