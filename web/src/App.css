@@ -65,3 +65,26 @@
   font-size: 0.9rem;
   color: #b42318;
 }
+
+/* Cabeçalho com o botão de sair à direita */
+.app-header-logged-in {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.logout-button {
+  flex-shrink: 0;
+  padding: 6px 14px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 999px;
+  background: #ffffff;
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.logout-button:hover {
+  background: rgba(0, 0, 0, 0.04);
+}

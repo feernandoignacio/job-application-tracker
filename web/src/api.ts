@@ -71,6 +71,10 @@ export function login(email: string, password: string) {
   });
 }
 
+export function logout(token: string) {
+  return request<void>('/auth/logout', { method: 'POST' }, token);
+}
+
 export function getApplications(token: string) {
   return request<Application[]>('/applications', {}, token);
 }

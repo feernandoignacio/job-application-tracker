@@ -6,6 +6,7 @@ import {
   createApplication,
   deleteApplication,
   getApplications,
+  logout,
   updateApplicationStatus,
 } from './api';
 import type { NewApplication } from './api';
@@ -144,6 +145,19 @@ function App() {
     setToken(newToken);
   }
 
+  // Sai da conta: avisa a API e limpa tudo no navegador
+  async function handleLogout() {
+    if (token) {
+      // Se a API falhar, sai do mesmo jeito
+      await logout(token).catch(() => {});
+    }
+
+    localStorage.removeItem(TOKEN_KEY);
+    setToken(null);
+    setApplications([]);
+    setActionError('');
+  }
+
   // Ninguém logado: mostra só a tela de login
   if (!token) {
     return (
@@ -160,9 +174,15 @@ function App() {
 
   return (
     <main className="app">
-      <header className="app-header">
-        <h1>Job Application Tracker</h1>
-        <p>Track every job application in one place.</p>
+      <header className="app-header app-header-logged-in">
+        <div>
+          <h1>Job Application Tracker</h1>
+          <p>Track every job application in one place.</p>
+        </div>
+
+        <button type="button" className="logout-button" onClick={handleLogout}>
+          Log out
+        </button>
       </header>
 
       <ApplicationForm onAdd={handleAdd} />

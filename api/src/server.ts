@@ -65,11 +65,13 @@ function requireAuth(request: Request, response: Response, next: NextFunction) {
     return;
   }
 
+  const tokenHash = hashToken(token);
+
   const session = db
     .prepare(
       'SELECT user_id FROM sessions WHERE token_hash = ? AND expires_at > ?',
     )
-    .get(hashToken(token), new Date().toISOString()) as
+    .get(tokenHash, new Date().toISOString()) as
     { user_id: string } | undefined;
 
   if (!session) {
@@ -79,6 +81,7 @@ function requireAuth(request: Request, response: Response, next: NextFunction) {
 
   // Guarda quem é o usuário para as rotas usarem
   response.locals.userId = session.user_id;
+  response.locals.tokenHash = tokenHash;
   next();
 }
 
@@ -151,6 +154,14 @@ app.post('/auth/login', (request, response) => {
   ).run(hashToken(token), user.id, expiresAt);
 
   response.json({ token, user: { id: user.id, email: user.email } });
+});
+
+// Faz logout: apaga a sessão, e o token para de funcionar
+app.post('/auth/logout', requireAuth, (_request, response) => {
+  db.prepare('DELETE FROM sessions WHERE token_hash = ?').run(
+    response.locals.tokenHash,
+  );
+  response.status(204).send();
 });
 
 // Lista as candidaturas do usuário logado
