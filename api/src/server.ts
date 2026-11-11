@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import express from 'express';
+import { db } from './database.ts';
 import type { Application, ApplicationStatus } from './types/application.ts';
 
 const app = express();
@@ -15,8 +16,35 @@ const validStatuses: ApplicationStatus[] = [
   'rejected',
 ];
 
-// Por enquanto, as candidaturas ficam na memória do servidor
-const applications: Application[] = [];
+// Formato de uma linha da tabela, como vem do banco
+type ApplicationRow = {
+  id: string;
+  company: string;
+  position: string;
+  status: ApplicationStatus;
+  applied_at: string;
+  job_url: string | null;
+  notes: string | null;
+};
+
+// Converte uma linha do banco para o formato usado na API
+function toApplication(row: ApplicationRow): Application {
+  return {
+    id: row.id,
+    company: row.company,
+    position: row.position,
+    status: row.status,
+    appliedAt: row.applied_at,
+    jobUrl: row.job_url ?? undefined,
+    notes: row.notes ?? undefined,
+  };
+}
+
+function findApplication(id: string): Application | undefined {
+  const row = db.prepare('SELECT * FROM applications WHERE id = ?').get(id) as
+    ApplicationRow | undefined;
+  return row ? toApplication(row) : undefined;
+}
 
 // Rota de teste: responde se a API está no ar
 app.get('/health', (_request, response) => {
@@ -25,7 +53,10 @@ app.get('/health', (_request, response) => {
 
 // Lista todas as candidaturas
 app.get('/applications', (_request, response) => {
-  response.json(applications);
+  const rows = db
+    .prepare('SELECT * FROM applications ORDER BY applied_at DESC, rowid DESC')
+    .all() as ApplicationRow[];
+  response.json(rows.map(toApplication));
 });
 
 // Cria uma candidatura nova
@@ -59,15 +90,24 @@ app.post('/applications', (request, response) => {
         : undefined,
   };
 
-  applications.unshift(newApplication);
+  db.prepare(
+    `INSERT INTO applications (id, company, position, status, applied_at, job_url)
+     VALUES (?, ?, ?, ?, ?, ?)`,
+  ).run(
+    newApplication.id,
+    newApplication.company,
+    newApplication.position,
+    newApplication.status,
+    newApplication.appliedAt,
+    newApplication.jobUrl ?? null,
+  );
+
   response.status(201).json(newApplication);
 });
 
 // Muda o status de uma candidatura
 app.patch('/applications/:id', (request, response) => {
-  const application = applications.find(
-    (item) => item.id === request.params.id,
-  );
+  const application = findApplication(request.params.id);
 
   if (!application) {
     response.status(404).json({ error: 'application not found' });
@@ -81,20 +121,25 @@ app.patch('/applications/:id', (request, response) => {
     return;
   }
 
-  application.status = status;
-  response.json(application);
+  db.prepare('UPDATE applications SET status = ? WHERE id = ?').run(
+    status,
+    application.id,
+  );
+
+  response.json({ ...application, status });
 });
 
 // Apaga uma candidatura
 app.delete('/applications/:id', (request, response) => {
-  const index = applications.findIndex((item) => item.id === request.params.id);
+  const result = db
+    .prepare('DELETE FROM applications WHERE id = ?')
+    .run(request.params.id);
 
-  if (index === -1) {
+  if (result.changes === 0) {
     response.status(404).json({ error: 'application not found' });
     return;
   }
 
-  applications.splice(index, 1);
   response.status(204).send();
 });
 
