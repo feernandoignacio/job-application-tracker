@@ -11,7 +11,8 @@ import {
 import type { Application, ApplicationStatus } from './types/application.ts';
 
 const app = express();
-const PORT = 3333;
+// Na hospedagem a porta vem do ambiente; no seu computador usa 3333
+const PORT = process.env.PORT ?? 3333;
 
 // Permite ler o corpo dos pedidos em JSON
 app.use(express.json());
@@ -286,6 +287,22 @@ app.delete(
   },
 );
 
+// Se alguma rota der erro inesperado, responde 500 em JSON
+app.use(
+  (
+    error: unknown,
+    _request: Request,
+    response: Response,
+    _next: NextFunction,
+  ) => {
+    console.error(error);
+    response.status(500).json({ error: 'internal server error' });
+  },
+);
+
 app.listen(PORT, () => {
   console.log(`API rodando em http://localhost:${PORT}`);
 });
+
+// A Vercel usa este export para rodar a API
+export default app;
