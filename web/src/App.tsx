@@ -223,7 +223,7 @@ function App() {
 
         {/* Lado direito: idioma e botão de sair */}
         <div className="top-bar-actions">
-          <LanguageSelect />
+          <LanguageSelect direction="down" />
 
           <button
             type="button"

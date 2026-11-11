@@ -62,18 +62,6 @@ function AuthForm({ onLogin }: AuthFormProps) {
 
   return (
     <div className="auth-wrapper">
-      {/* Acima do cartão: link para trocar entre entrar e criar conta */}
-      <p className="auth-switch">
-        {isRegister ? t('haveAccount') : t('noAccount')}
-        <button
-          type="button"
-          className="auth-switch-button"
-          onClick={toggleMode}
-        >
-          {isRegister ? t('logIn') : t('signUp')}
-        </button>
-      </p>
-
       <form className="auth-form" onSubmit={handleSubmit}>
         <h2>{isRegister ? t('createAccount') : t('logIn')}</h2>
 
@@ -133,9 +121,14 @@ function AuthForm({ onLogin }: AuthFormProps) {
               : t('continue')}
         </button>
 
-        {/* Embaixo do botão: troca de idioma */}
-        <div className="auth-language">
-          <LanguageSelect />
+        {/* Embaixo do botão: link para criar conta (esquerda) e idioma (direita) */}
+        <div className="auth-footer">
+          <button type="button" className="auth-switch" onClick={toggleMode}>
+            {isRegister ? t('haveAccount') : t('noAccount')}{' '}
+            <strong>{isRegister ? t('logIn') : t('signUp')}</strong>
+          </button>
+
+          <LanguageSelect direction="up" />
         </div>
       </form>
     </div>

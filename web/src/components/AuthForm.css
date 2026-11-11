@@ -73,39 +73,33 @@
   margin: 0 auto;
 }
 
-.auth-switch {
+/* Rodapé do cartão: link à esquerda, idioma à direita */
+.auth-footer {
   display: flex;
   align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 14px;
-  font-size: 0.95rem;
-  color: #0f2733;
+  justify-content: space-between;
+  gap: 12px;
 }
 
-/* Botão "Sign up": fundo azul clarinho, como na referência */
-.auth-switch-button {
-  padding: 6px 14px;
+/* "Don't have an account? Sign up" como um link clicável */
+.auth-switch {
+  padding: 0;
   border: none;
-  border-radius: 8px;
-  background: #c9f1fa;
+  background: none;
   font: inherit;
   font-size: 0.9rem;
-  font-weight: 700;
-  color: #0e6e88;
+  color: #0f2733;
+  text-align: left;
+  white-space: nowrap;
   cursor: pointer;
-  transition: background 0.15s;
 }
 
-.auth-switch-button:hover {
-  background: #b0e9f6;
+.auth-switch strong {
+  color: #2a6f8f;
 }
 
-/* Seletor de idioma, embaixo do botão Continue */
-.auth-language {
-  display: flex;
-  justify-content: flex-end;
+.auth-switch:hover strong {
+  text-decoration: underline;
 }
 
 .auth-error {
