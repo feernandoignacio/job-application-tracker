@@ -3,7 +3,16 @@ import { DatabaseSync } from 'node:sqlite';
 // Abre (ou cria, se não existir) o arquivo do banco
 export const db = new DatabaseSync('data.db');
 
-// Cria a tabela na primeira vez que a API roda
+// Cria as tabelas na primeira vez que a API roda
+db.exec(`
+  CREATE TABLE IF NOT EXISTS users (
+    id TEXT PRIMARY KEY,
+    email TEXT NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL,
+    created_at TEXT NOT NULL
+  )
+`);
+
 db.exec(`
   CREATE TABLE IF NOT EXISTS applications (
     id TEXT PRIMARY KEY,

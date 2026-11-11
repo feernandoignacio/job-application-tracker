@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import express from 'express';
 import { db } from './database.ts';
+import { hashPassword } from './password.ts';
 import type { Application, ApplicationStatus } from './types/application.ts';
 
 const app = express();
@@ -49,6 +50,42 @@ function findApplication(id: string): Application | undefined {
 // Rota de teste: responde se a API está no ar
 app.get('/health', (_request, response) => {
   response.json({ status: 'ok' });
+});
+
+// Cadastra um usuário novo
+app.post('/auth/register', (request, response) => {
+  const { email, password } = request.body ?? {};
+
+  if (typeof email !== 'string' || !email.includes('@')) {
+    response.status(400).json({ error: 'email is invalid' });
+    return;
+  }
+
+  if (typeof password !== 'string' || password.length < 8) {
+    response
+      .status(400)
+      .json({ error: 'password must have at least 8 characters' });
+    return;
+  }
+
+  const normalizedEmail = email.trim().toLowerCase();
+
+  const existingUser = db
+    .prepare('SELECT id FROM users WHERE email = ?')
+    .get(normalizedEmail);
+
+  if (existingUser) {
+    response.status(409).json({ error: 'email already registered' });
+    return;
+  }
+
+  const id = randomUUID();
+
+  db.prepare(
+    'INSERT INTO users (id, email, password_hash, created_at) VALUES (?, ?, ?, ?)',
+  ).run(id, normalizedEmail, hashPassword(password), new Date().toISOString());
+
+  response.status(201).json({ id, email: normalizedEmail });
 });
 
 // Lista todas as candidaturas
