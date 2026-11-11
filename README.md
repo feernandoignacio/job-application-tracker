@@ -17,6 +17,7 @@ A full stack web application to organize and track job applications. Each user c
 - Shows the name of the logged user and a greeting based on the time of day
 - Log out from any device, which invalidates the session token
 - Each user only sees their own applications
+- Available in English and Portuguese, with the choice saved in the browser
 - Responsive layout for desktop and mobile
 
 ## Tech stack

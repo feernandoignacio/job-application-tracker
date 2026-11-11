@@ -3,6 +3,7 @@ import type { FormEvent } from 'react';
 import type { NewApplication } from '../api';
 import type { ApplicationStatus } from '../types/application';
 import './ApplicationForm.css';
+import { useLanguage } from '../i18n/LanguageContext';
 
 type ApplicationFormProps = {
   // Devolve true se salvou, para o formulário saber se pode limpar
@@ -10,6 +11,8 @@ type ApplicationFormProps = {
 };
 
 function ApplicationForm({ onAdd }: ApplicationFormProps) {
+  const { t } = useLanguage();
+
   // Um estado para cada campo do formulário
   const [company, setCompany] = useState('');
   const [position, setPosition] = useState('');
@@ -44,7 +47,7 @@ function ApplicationForm({ onAdd }: ApplicationFormProps) {
   return (
     <form className="application-form" onSubmit={handleSubmit}>
       <label>
-        Company
+        {t('company')}
         <input
           type="text"
           value={company}
@@ -54,7 +57,7 @@ function ApplicationForm({ onAdd }: ApplicationFormProps) {
       </label>
 
       <label>
-        Position
+        {t('position')}
         <input
           type="text"
           value={position}
@@ -64,22 +67,22 @@ function ApplicationForm({ onAdd }: ApplicationFormProps) {
       </label>
 
       <label>
-        Status
+        {t('status')}
         <select
           value={status}
           onChange={(event) =>
             setStatus(event.target.value as ApplicationStatus)
           }
         >
-          <option value="applied">Applied</option>
-          <option value="interview">Interview</option>
-          <option value="offer">Offer</option>
-          <option value="rejected">Rejected</option>
+          <option value="applied">{t('applied')}</option>
+          <option value="interview">{t('interview')}</option>
+          <option value="offer">{t('offer')}</option>
+          <option value="rejected">{t('rejected')}</option>
         </select>
       </label>
 
       <label className="full-width">
-        Job URL (optional)
+        {t('jobUrlOptional')}
         <input
           type="url"
           value={jobUrl}
@@ -89,16 +92,16 @@ function ApplicationForm({ onAdd }: ApplicationFormProps) {
       </label>
 
       <label className="full-width">
-        Notes (optional)
+        {t('notesOptional')}
         <textarea
           value={notes}
           onChange={(event) => setNotes(event.target.value)}
-          placeholder="Recruiter name, salary, next steps..."
+          placeholder={t('notesPlaceholder')}
           rows={2}
         />
       </label>
 
-      <button type="submit">Add application</button>
+      <button type="submit">{t('addApplication')}</button>
     </form>
   );
 }

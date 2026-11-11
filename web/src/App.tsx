@@ -13,6 +13,9 @@ import {
 import type { AuthUser, NewApplication } from './api';
 import type { Application, ApplicationStatus } from './types/application';
 import AuthForm from './components/AuthForm';
+import LanguageSelect from './components/LanguageSelect';
+import { useLanguage } from './i18n/LanguageContext';
+import type { TranslationKey } from './i18n/translations';
 import './App.css';
 
 // O filtro pode ser "todos" ou um dos status
@@ -22,16 +25,16 @@ type StatusFilter = 'all' | ApplicationStatus;
 const TOKEN_KEY = 'auth-token';
 
 // Bom dia, boa tarde ou boa noite, de acordo com a hora do computador
-function getGreeting() {
+function getGreetingKey(): TranslationKey {
   const hour = new Date().getHours();
 
   if (hour < 12) {
-    return 'Good morning';
+    return 'goodMorning';
   }
   if (hour < 18) {
-    return 'Good afternoon';
+    return 'goodAfternoon';
   }
-  return 'Good evening';
+  return 'goodEvening';
 }
 
 const filters: StatusFilter[] = [
@@ -43,6 +46,8 @@ const filters: StatusFilter[] = [
 ];
 
 function App() {
+  const { t } = useLanguage();
+
   // Token do usuário logado (vazio = ninguém logado)
   const [token, setToken] = useState(() => localStorage.getItem(TOKEN_KEY));
 
@@ -77,7 +82,7 @@ function App() {
           setToken(null);
           return;
         }
-        setError('Could not load your applications.');
+        setError('loadError');
       })
       .finally(() => setLoading(false));
   }, [token]);
@@ -103,7 +108,7 @@ function App() {
       setToken(null);
       return;
     }
-    setActionError('Something went wrong. Please try again.');
+    setActionError('actionError');
   }
 
   // Apaga na API e, se der certo, tira da tela
@@ -188,8 +193,8 @@ function App() {
     return (
       <main className="app">
         <header className="app-header auth-header">
-          <h1>Job Application Tracker</h1>
-          <p>Track every job application in one place.</p>
+          <h1>{t('appTitle')}</h1>
+          <p>{t('appSubtitle')}</p>
         </header>
 
         <AuthForm onLogin={handleLogin} />
@@ -211,32 +216,43 @@ function App() {
             </span>
             <div className="user-text">
               <span className="user-name">{displayName}</span>
-              <span className="user-greeting">{getGreeting()}</span>
+              <span className="user-greeting">{t(getGreetingKey())}</span>
             </div>
           </div>
         )}
 
-        <button type="button" className="logout-button" onClick={handleLogout}>
-          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3" />
-            <path d="M10 17l-5-5 5-5" />
-            <path d="M5 12h11" />
-          </svg>
-          Log out
-        </button>
+        {/* Lado direito: idioma e botão de sair */}
+        <div className="top-bar-actions">
+          <LanguageSelect />
+
+          <button
+            type="button"
+            className="logout-button"
+            onClick={handleLogout}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3" />
+              <path d="M10 17l-5-5 5-5" />
+              <path d="M5 12h11" />
+            </svg>
+            {t('logOut')}
+          </button>
+        </div>
       </header>
 
       <main className="app">
         <header className="app-header">
-          <h1>Job Application Tracker</h1>
-          <p>Track every job application in one place.</p>
+          <h1>{t('appTitle')}</h1>
+          <p>{t('appSubtitle')}</p>
         </header>
 
         <ApplicationForm onAdd={handleAdd} />
 
-        {actionError && <p className="action-error">{actionError}</p>}
+        {actionError && (
+          <p className="action-error">{t(actionError as TranslationKey)}</p>
+        )}
 
-        <nav className="status-filter" aria-label="Filter by status">
+        <nav className="status-filter" aria-label={t('filterByStatus')}>
           {filters.map((filter) => (
             <button
               key={filter}
@@ -248,7 +264,7 @@ function App() {
               }
               onClick={() => setSelectedStatus(filter)}
             >
-              {filter}
+              {t(filter)}
               <span className="filter-count">
                 {filterApplications(filter).length}
               </span>
@@ -257,11 +273,11 @@ function App() {
         </nav>
 
         {loading ? (
-          <p className="empty-message">Loading...</p>
+          <p className="empty-message">{t('loading')}</p>
         ) : error ? (
-          <p className="empty-message">{error}</p>
+          <p className="empty-message">{t(error as TranslationKey)}</p>
         ) : visibleApplications.length === 0 ? (
-          <p className="empty-message">No applications with this status.</p>
+          <p className="empty-message">{t('noApplications')}</p>
         ) : (
           <ul className="application-list">
             {visibleApplications.map((application) => (

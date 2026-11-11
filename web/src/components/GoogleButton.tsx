@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { loginWithGoogle } from '../api';
+import { useLanguage } from '../i18n/LanguageContext';
 
 // O ID do app no Google vem do .env (VITE_GOOGLE_CLIENT_ID)
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID as
@@ -50,6 +51,7 @@ type GoogleButtonProps = {
 };
 
 function GoogleButton({ onLogin, onError }: GoogleButtonProps) {
+  const { t } = useLanguage();
   // Guarda o "cliente" do Google depois que o script carrega
   const clientRef = useRef<TokenClient | null>(null);
   const [ready, setReady] = useState(false);
@@ -73,19 +75,19 @@ function GoogleButton({ onLogin, onError }: GoogleButtonProps) {
           scope: 'openid email profile',
           callback: (response) => {
             if (!response.access_token) {
-              onError('Could not sign in with Google.');
+              onError(t('googleError'));
               return;
             }
 
             loginWithGoogle(response.access_token)
               .then(({ token }) => onLogin(token))
-              .catch(() => onError('Could not sign in with Google.'));
+              .catch(() => onError(t('googleError')));
           },
         });
         setReady(true);
       })
-      .catch(() => onError('Could not load Google sign in.'));
-  }, [onLogin, onError]);
+      .catch(() => onError(t('googleLoadError')));
+  }, [onLogin, onError, t]);
 
   // Sem o ID configurado, o botão simplesmente não aparece
   if (!GOOGLE_CLIENT_ID) {
@@ -124,10 +126,10 @@ function GoogleButton({ onLogin, onError }: GoogleButtonProps) {
             d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"
           />
         </svg>
-        Continue with Google
+        {t('continueWithGoogle')}
       </button>
 
-      <p className="auth-divider">or</p>
+      <p className="auth-divider">{t('or')}</p>
     </>
   );
 }

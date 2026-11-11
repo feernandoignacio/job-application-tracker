@@ -40,7 +40,6 @@
   background: #ffffff;
   font: inherit;
   font-size: 0.85rem;
-  text-transform: capitalize;
   cursor: pointer;
 }
 
@@ -123,13 +122,20 @@
   color: rgba(15, 39, 51, 0.6);
 }
 
+/* Lado direito da barra: idioma e botão de sair */
+.top-bar-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-left: auto;
+}
+
 /* Botão de sair: contorno arredondado que escurece ao passar o mouse */
 .logout-button {
   display: flex;
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
-  margin-left: auto;
   padding: 9px 18px;
   border: 1px solid #0f2733;
   border-radius: 999px;

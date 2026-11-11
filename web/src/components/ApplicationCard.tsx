@@ -4,6 +4,7 @@ import type { NewApplication } from '../api';
 import type { Application, ApplicationStatus } from '../types/application';
 import { formatDate } from '../utils/formatDate';
 import './ApplicationCard.css';
+import { useLanguage } from '../i18n/LanguageContext';
 
 // O que este componente recebe de fora (as "props")
 type ApplicationCardProps = {
@@ -18,6 +19,8 @@ function ApplicationCard({
   onDelete,
   onUpdate,
 }: ApplicationCardProps) {
+  const { language, t } = useLanguage();
+
   // O card tem dois modos: mostrando os dados ou editando
   const [isEditing, setIsEditing] = useState(false);
   const [company, setCompany] = useState(application.company);
@@ -53,7 +56,7 @@ function ApplicationCard({
   // Pergunta antes de apagar, para evitar clique sem querer
   function handleDelete() {
     const confirmed = window.confirm(
-      `Delete the application to ${application.company}?`,
+      t('confirmDelete', { company: application.company }),
     );
 
     if (confirmed) {
@@ -66,7 +69,7 @@ function ApplicationCard({
       <li className="application-card">
         <form className="edit-form" onSubmit={handleSave}>
           <label>
-            Company
+            {t('company')}
             <input
               type="text"
               value={company}
@@ -76,7 +79,7 @@ function ApplicationCard({
           </label>
 
           <label>
-            Position
+            {t('position')}
             <input
               type="text"
               value={position}
@@ -86,7 +89,7 @@ function ApplicationCard({
           </label>
 
           <label>
-            Job URL
+            {t('jobUrl')}
             <input
               type="url"
               value={jobUrl}
@@ -96,7 +99,7 @@ function ApplicationCard({
           </label>
 
           <label>
-            Notes
+            {t('notes')}
             <textarea
               value={notes}
               onChange={(event) => setNotes(event.target.value)}
@@ -106,14 +109,14 @@ function ApplicationCard({
 
           <div className="edit-actions">
             <button type="submit" className="save-button">
-              Save
+              {t('save')}
             </button>
             <button
               type="button"
               className="card-button"
               onClick={() => setIsEditing(false)}
             >
-              Cancel
+              {t('cancel')}
             </button>
           </div>
         </form>
@@ -127,7 +130,9 @@ function ApplicationCard({
       <span className="application-position">{application.position}</span>
 
       <span className="application-date">
-        Applied on {formatDate(application.appliedAt)}
+        {t('appliedOn', {
+          date: formatDate(application.appliedAt, language),
+        })}
       </span>
 
       {application.jobUrl && (
@@ -137,7 +142,7 @@ function ApplicationCard({
           target="_blank"
           rel="noopener noreferrer"
         >
-          View job
+          {t('viewJob')}
         </a>
       )}
 
@@ -153,24 +158,24 @@ function ApplicationCard({
             status: event.target.value as ApplicationStatus,
           })
         }
-        aria-label={`Status of ${application.company} application`}
+        aria-label={t('statusOf', { company: application.company })}
       >
-        <option value="applied">Applied</option>
-        <option value="interview">Interview</option>
-        <option value="offer">Offer</option>
-        <option value="rejected">Rejected</option>
+        <option value="applied">{t('applied')}</option>
+        <option value="interview">{t('interview')}</option>
+        <option value="offer">{t('offer')}</option>
+        <option value="rejected">{t('rejected')}</option>
       </select>
 
       <div className="card-actions">
         <button type="button" className="card-button" onClick={startEditing}>
-          Edit
+          {t('edit')}
         </button>
         <button
           type="button"
           className="card-button delete-button"
           onClick={handleDelete}
         >
-          Delete
+          {t('delete')}
         </button>
       </div>
     </li>

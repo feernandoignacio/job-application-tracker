@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { login, register } from '../api';
+import { useLanguage } from '../i18n/LanguageContext';
+import { isTranslationKey } from '../i18n/translations';
 import GoogleButton from './GoogleButton';
+import LanguageSelect from './LanguageSelect';
 import './AuthForm.css';
 
 type AuthFormProps = {
@@ -9,6 +12,8 @@ type AuthFormProps = {
 };
 
 function AuthForm({ onLogin }: AuthFormProps) {
+  const { t } = useLanguage();
+
   // A mesma tela serve para entrar e para criar conta
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [name, setName] = useState('');
@@ -40,9 +45,10 @@ function AuthForm({ onLogin }: AuthFormProps) {
       const { token } = await login(email, password);
       onLogin(token);
     } catch (caught) {
-      setError(
-        caught instanceof Error ? caught.message : 'something went wrong',
-      );
+      // Se o erro da API tiver tradução, mostra traduzido
+      const message =
+        caught instanceof Error ? caught.message : 'something went wrong';
+      setError(isTranslationKey(message) ? t(message) : message);
     } finally {
       setLoading(false);
     }
@@ -55,69 +61,84 @@ function AuthForm({ onLogin }: AuthFormProps) {
   }
 
   return (
-    <form className="auth-form" onSubmit={handleSubmit}>
-      <h2>{isRegister ? 'Create account' : 'Log in'}</h2>
+    <div className="auth-wrapper">
+      {/* Acima do cartão: link para trocar entre entrar e criar conta */}
+      <p className="auth-switch">
+        {isRegister ? t('haveAccount') : t('noAccount')}
+        <button
+          type="button"
+          className="auth-switch-button"
+          onClick={toggleMode}
+        >
+          {isRegister ? t('logIn') : t('signUp')}
+        </button>
+      </p>
 
-      {/* Google primeiro, depois a linha "or" e o formulário normal */}
-      <GoogleButton onLogin={onLogin} onError={setError} />
+      <form className="auth-form" onSubmit={handleSubmit}>
+        <h2>{isRegister ? t('createAccount') : t('logIn')}</h2>
 
-      {isRegister && (
+        {/* Google primeiro, depois a linha "or" e o formulário normal */}
+        <GoogleButton onLogin={onLogin} onError={setError} />
+
+        {isRegister && (
+          <label>
+            {t('name')}
+            <input
+              type="text"
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              placeholder={t('namePlaceholder')}
+              autoComplete="name"
+              required
+            />
+          </label>
+        )}
+
         <label>
-          Name
+          {t('email')}
           <input
-            type="text"
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            placeholder="Enter your name"
-            autoComplete="name"
+            type="email"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            placeholder={t('emailPlaceholder')}
+            autoComplete="email"
             required
           />
         </label>
-      )}
 
-      <label>
-        Email
-        <input
-          type="email"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-          placeholder="Enter your email"
-          autoComplete="email"
-          required
-        />
-      </label>
+        <label>
+          {t('password')}
+          <input
+            type="password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            placeholder={
+              isRegister
+                ? t('newPasswordPlaceholder')
+                : t('passwordPlaceholder')
+            }
+            autoComplete={isRegister ? 'new-password' : 'current-password'}
+            minLength={8}
+            required
+          />
+        </label>
 
-      <label>
-        Password
-        <input
-          type="password"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          placeholder={
-            isRegister ? 'At least 8 characters' : 'Enter your password'
-          }
-          autoComplete={isRegister ? 'new-password' : 'current-password'}
-          minLength={8}
-          required
-        />
-      </label>
+        {error && <p className="auth-error">{error}</p>}
 
-      {error && <p className="auth-error">{error}</p>}
+        <button type="submit" className="auth-submit" disabled={!canSubmit}>
+          {loading
+            ? t('pleaseWait')
+            : isRegister
+              ? t('createAccount')
+              : t('continue')}
+        </button>
 
-      <button type="submit" className="auth-submit" disabled={!canSubmit}>
-        {loading
-          ? 'Please wait...'
-          : isRegister
-            ? 'Create account'
-            : 'Continue'}
-      </button>
-
-      <button type="button" className="auth-toggle" onClick={toggleMode}>
-        {isRegister
-          ? 'Already have an account? Log in'
-          : "Don't have an account? Sign up"}
-      </button>
-    </form>
+        {/* Embaixo do botão: troca de idioma */}
+        <div className="auth-language">
+          <LanguageSelect />
+        </div>
+      </form>
+    </div>
   );
 }
 
