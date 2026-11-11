@@ -4,8 +4,8 @@ import './AuthHero.css';
 
 // Cards de exemplo que ficam parados nas colunas
 const exampleCards = [
-  { company: 'Northwind', position: 'Front-end Developer' },
-  { company: 'Globex', position: 'React Developer' },
+  { company: 'Planet Express', position: 'Front-end Developer' },
+  { company: 'Monsters, Inc.', position: 'React Developer' },
 ];
 
 const features: TranslationKey[] = [
