@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import express from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import { db } from './database.ts';
 import {
   createToken,
@@ -46,10 +47,39 @@ function toApplication(row: ApplicationRow): Application {
   };
 }
 
-function findApplication(id: string): Application | undefined {
-  const row = db.prepare('SELECT * FROM applications WHERE id = ?').get(id) as
-    ApplicationRow | undefined;
+// Busca uma candidatura, mas só se ela for deste usuário
+function findApplication(id: string, userId: string): Application | undefined {
+  const row = db
+    .prepare('SELECT * FROM applications WHERE id = ? AND user_id = ?')
+    .get(id, userId) as ApplicationRow | undefined;
   return row ? toApplication(row) : undefined;
+}
+
+// "Porteiro": só deixa passar quem mandar um token válido
+function requireAuth(request: Request, response: Response, next: NextFunction) {
+  const header = request.headers.authorization ?? '';
+  const [type, token] = header.split(' ');
+
+  if (type !== 'Bearer' || !token) {
+    response.status(401).json({ error: 'authentication required' });
+    return;
+  }
+
+  const session = db
+    .prepare(
+      'SELECT user_id FROM sessions WHERE token_hash = ? AND expires_at > ?',
+    )
+    .get(hashToken(token), new Date().toISOString()) as
+    { user_id: string } | undefined;
+
+  if (!session) {
+    response.status(401).json({ error: 'invalid or expired token' });
+    return;
+  }
+
+  // Guarda quem é o usuário para as rotas usarem
+  response.locals.userId = session.user_id;
+  next();
 }
 
 // Rota de teste: responde se a API está no ar
@@ -123,16 +153,18 @@ app.post('/auth/login', (request, response) => {
   response.json({ token, user: { id: user.id, email: user.email } });
 });
 
-// Lista todas as candidaturas
-app.get('/applications', (_request, response) => {
+// Lista as candidaturas do usuário logado
+app.get('/applications', requireAuth, (_request, response) => {
   const rows = db
-    .prepare('SELECT * FROM applications ORDER BY applied_at DESC, rowid DESC')
-    .all() as ApplicationRow[];
+    .prepare(
+      'SELECT * FROM applications WHERE user_id = ? ORDER BY applied_at DESC, rowid DESC',
+    )
+    .all(response.locals.userId) as ApplicationRow[];
   response.json(rows.map(toApplication));
 });
 
 // Cria uma candidatura nova
-app.post('/applications', (request, response) => {
+app.post('/applications', requireAuth, (request, response) => {
   const { company, position, status, jobUrl } = request.body ?? {};
 
   if (typeof company !== 'string' || company.trim() === '') {
@@ -163,10 +195,11 @@ app.post('/applications', (request, response) => {
   };
 
   db.prepare(
-    `INSERT INTO applications (id, company, position, status, applied_at, job_url)
-     VALUES (?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO applications (id, user_id, company, position, status, applied_at, job_url)
+     VALUES (?, ?, ?, ?, ?, ?, ?)`,
   ).run(
     newApplication.id,
+    response.locals.userId,
     newApplication.company,
     newApplication.position,
     newApplication.status,
@@ -178,42 +211,53 @@ app.post('/applications', (request, response) => {
 });
 
 // Muda o status de uma candidatura
-app.patch('/applications/:id', (request, response) => {
-  const application = findApplication(request.params.id);
+app.patch(
+  '/applications/:id',
+  requireAuth,
+  (request: Request<{ id: string }>, response) => {
+    const application = findApplication(
+      request.params.id,
+      response.locals.userId,
+    );
 
-  if (!application) {
-    response.status(404).json({ error: 'application not found' });
-    return;
-  }
+    if (!application) {
+      response.status(404).json({ error: 'application not found' });
+      return;
+    }
 
-  const { status } = request.body ?? {};
+    const { status } = request.body ?? {};
 
-  if (!validStatuses.includes(status)) {
-    response.status(400).json({ error: 'status is invalid' });
-    return;
-  }
+    if (!validStatuses.includes(status)) {
+      response.status(400).json({ error: 'status is invalid' });
+      return;
+    }
 
-  db.prepare('UPDATE applications SET status = ? WHERE id = ?').run(
-    status,
-    application.id,
-  );
+    db.prepare('UPDATE applications SET status = ? WHERE id = ?').run(
+      status,
+      application.id,
+    );
 
-  response.json({ ...application, status });
-});
+    response.json({ ...application, status });
+  },
+);
 
 // Apaga uma candidatura
-app.delete('/applications/:id', (request, response) => {
-  const result = db
-    .prepare('DELETE FROM applications WHERE id = ?')
-    .run(request.params.id);
+app.delete(
+  '/applications/:id',
+  requireAuth,
+  (request: Request<{ id: string }>, response) => {
+    const result = db
+      .prepare('DELETE FROM applications WHERE id = ? AND user_id = ?')
+      .run(request.params.id, response.locals.userId);
 
-  if (result.changes === 0) {
-    response.status(404).json({ error: 'application not found' });
-    return;
-  }
+    if (result.changes === 0) {
+      response.status(404).json({ error: 'application not found' });
+      return;
+    }
 
-  response.status(204).send();
-});
+    response.status(204).send();
+  },
+);
 
 app.listen(PORT, () => {
   console.log(`API rodando em http://localhost:${PORT}`);

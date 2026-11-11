@@ -24,6 +24,7 @@ db.exec(`
 db.exec(`
   CREATE TABLE IF NOT EXISTS applications (
     id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL REFERENCES users(id),
     company TEXT NOT NULL,
     position TEXT NOT NULL,
     status TEXT NOT NULL,
