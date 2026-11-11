@@ -148,6 +148,10 @@ app.post('/auth/register', async (request, response) => {
   response.status(201).json({ id, email: normalizedEmail });
 });
 
+// Limite de tentativas de login: 5 erros em 15 minutos bloqueiam o email
+const MAX_LOGIN_ATTEMPTS = 5;
+const LOGIN_WINDOW_MINUTES = 15;
+
 // Faz login e devolve um token
 app.post('/auth/login', async (request, response) => {
   const { email, password } = request.body ?? {};
@@ -157,19 +161,52 @@ app.post('/auth/login', async (request, response) => {
     return;
   }
 
+  const normalizedEmail = email.trim().toLowerCase();
+  const windowStart = new Date(
+    Date.now() - LOGIN_WINDOW_MINUTES * 60 * 1000,
+  ).toISOString();
+
+  // Conta quantas vezes erraram a senha deste email nos últimos 15 minutos
+  const attempts = await db.query<{ total: number }>(
+    'SELECT COUNT(*)::int AS total FROM login_attempts WHERE email = $1 AND attempted_at > $2',
+    [normalizedEmail, windowStart],
+  );
+
+  if (attempts.rows[0].total >= MAX_LOGIN_ATTEMPTS) {
+    response.status(429).json({
+      error: `too many login attempts, try again in ${LOGIN_WINDOW_MINUTES} minutes`,
+    });
+    return;
+  }
+
   const result = await db.query<{
     id: string;
     email: string;
     password_hash: string;
   }>('SELECT id, email, password_hash FROM users WHERE email = $1', [
-    email.trim().toLowerCase(),
+    normalizedEmail,
   ]);
   const user = result.rows[0];
 
   if (!user || !verifyPassword(password, user.password_hash)) {
+    // Registra o erro e apaga os registros antigos deste email
+    await db.query(
+      'DELETE FROM login_attempts WHERE email = $1 AND attempted_at <= $2',
+      [normalizedEmail, windowStart],
+    );
+    await db.query(
+      'INSERT INTO login_attempts (email, attempted_at) VALUES ($1, $2)',
+      [normalizedEmail, new Date().toISOString()],
+    );
+
     response.status(401).json({ error: 'invalid email or password' });
     return;
   }
+
+  // Acertou: zera as tentativas deste email
+  await db.query('DELETE FROM login_attempts WHERE email = $1', [
+    normalizedEmail,
+  ]);
 
   const token = createToken();
   const thirtyDays = 30 * 24 * 60 * 60 * 1000;

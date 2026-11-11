@@ -41,3 +41,16 @@ await db.query(`
     created_at TEXT NOT NULL
   )
 `);
+
+// Guarda as tentativas de login que erraram a senha, para limitar abusos
+await db.query(`
+  CREATE TABLE IF NOT EXISTS login_attempts (
+    email TEXT NOT NULL,
+    attempted_at TEXT NOT NULL
+  )
+`);
+
+await db.query(`
+  CREATE INDEX IF NOT EXISTS login_attempts_email_idx
+  ON login_attempts (email, attempted_at)
+`);
