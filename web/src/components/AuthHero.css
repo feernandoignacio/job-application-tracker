@@ -10,9 +10,12 @@
   /* Pouco espaço em cima e embaixo: o bloco quase encosta nas bordas da tela */
   margin: 6px 0 6px clamp(10px, 2.5vh, 20px);
   /* Em telas grandes o conteúdo se afasta da borda, sem ficar colado à esquerda */
-  padding: clamp(20px, 6vh, 56px) 96px clamp(20px, 6vh, 56px)
+  /* Em cima sobra espaço para o logo, que fica fixo no canto */
+  padding: clamp(64px, 11vh, 96px) 96px clamp(20px, 6vh, 56px)
     clamp(48px, 8vw, 160px);
   overflow: hidden;
+  /* Referência para posicionar o logo no canto */
+  position: relative;
   /* Cada canto com uma curva diferente: pouco à esquerda, bem curvo à direita */
   border-radius: 36px 46% 38% 36px / 36px 30% 42% 36px;
   background-color: #0f2733;
@@ -24,7 +27,11 @@
   color: #ffffff;
 }
 
+/* Logo e nome no canto superior esquerdo do bloco */
 .hero-brand {
+  position: absolute;
+  top: clamp(18px, 4vh, 36px);
+  left: clamp(24px, 3vw, 40px);
   display: flex;
   align-items: center;
   gap: 10px;
