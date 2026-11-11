@@ -13,6 +13,7 @@ import {
 import type { AuthUser, NewApplication } from './api';
 import type { Application, ApplicationStatus } from './types/application';
 import AuthForm from './components/AuthForm';
+import AuthHero from './components/AuthHero';
 import LanguageSelect from './components/LanguageSelect';
 import { useLanguage } from './i18n/LanguageContext';
 import type { TranslationKey } from './i18n/translations';
@@ -191,14 +192,20 @@ function App() {
   // Ninguém logado: mostra só a tela de login
   if (!token) {
     return (
-      <main className="app">
-        <header className="app-header auth-header">
-          <h1>{t('appTitle')}</h1>
-          <p>{t('appSubtitle')}</p>
-        </header>
+      <div className="auth-page">
+        <AuthHero />
 
-        <AuthForm onLogin={handleLogin} />
-      </main>
+        {/* Lado direito: o cartão de login */}
+        <main className="auth-panel">
+          {/* No celular, a coluna da esquerda some e este título aparece */}
+          <header className="auth-mobile-header">
+            <h1>{t('appTitle')}</h1>
+            <p>{t('appSubtitle')}</p>
+          </header>
+
+          <AuthForm onLogin={handleLogin} />
+        </main>
+      </div>
     );
   }
 

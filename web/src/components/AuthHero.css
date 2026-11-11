@@ -1,0 +1,285 @@
+/* Coluna escura da esquerda, com textura leve de pontinhos */
+.auth-hero {
+  flex: 1 1 560px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 40px;
+  padding: 56px 64px;
+  background-color: #0f2733;
+  background-image: radial-gradient(
+    rgba(255, 255, 255, 0.09) 1px,
+    transparent 1px
+  );
+  background-size: 22px 22px;
+  color: #ffffff;
+}
+
+.hero-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.hero-logo {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: #5ad1e6;
+  color: #0f2733;
+}
+
+.hero-logo svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.hero-text {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 520px;
+}
+
+.hero-text h1 {
+  font-size: 2.9rem;
+  line-height: 1.08;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.hero-highlight {
+  color: #5ad1e6;
+}
+
+.hero-text p {
+  font-size: 1.1rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+/* Mini quadro com três colunas */
+.hero-board {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 560px;
+}
+
+.hero-columns,
+.hero-lanes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.hero-columns {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Os cards parados ficam embaixo, deixando espaço para o card que anda */
+.hero-lanes {
+  position: relative;
+  padding-top: 98px;
+}
+
+.hero-card {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-height: 58px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.hero-card strong {
+  font-size: 0.9rem;
+}
+
+.hero-card span {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.hero-card-empty {
+  border-style: dashed;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* O card branco que anda pelas colunas */
+.hero-card-moving {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc((100% - 32px) / 3);
+  background: #ffffff;
+  color: #0f2733;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  animation: hero-travel 7.5s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+.hero-card-moving span {
+  color: #4b5d66;
+}
+
+/* As três etiquetas ficam uma em cima da outra; só uma aparece por vez */
+.hero-pills {
+  position: relative;
+  height: 22px;
+  margin-top: 8px;
+}
+
+.hero-card-moving .hero-pill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  opacity: 0;
+}
+
+.hero-card-moving .pill-applied {
+  background: #e3ecff;
+  color: #2348a8;
+  animation: hero-pill-applied 7.5s infinite;
+}
+
+.hero-card-moving .pill-interview {
+  background: #fff3d6;
+  color: #8a5a00;
+  animation: hero-pill-interview 7.5s infinite;
+}
+
+.hero-card-moving .pill-offer {
+  background: #dff5e3;
+  color: #1d6b32;
+  animation: hero-pill-offer 7.5s infinite;
+}
+
+/* Andar: para em cada coluna e depois volta para o começo */
+@keyframes hero-travel {
+  0%,
+  22% {
+    transform: translateX(0);
+  }
+  33%,
+  55% {
+    transform: translateX(calc(100% + 16px));
+  }
+  66%,
+  88% {
+    transform: translateX(calc(200% + 32px));
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes hero-pill-applied {
+  0%,
+  27% {
+    opacity: 1;
+  }
+  30%,
+  97% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes hero-pill-interview {
+  0%,
+  27% {
+    opacity: 0;
+  }
+  30%,
+  60% {
+    opacity: 1;
+  }
+  63%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes hero-pill-offer {
+  0%,
+  60% {
+    opacity: 0;
+  }
+  63%,
+  94% {
+    opacity: 1;
+  }
+  97%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Quem prefere menos movimento vê o card parado */
+@media (prefers-reduced-motion: reduce) {
+  .hero-card-moving,
+  .hero-card-moving .hero-pill {
+    animation: none;
+  }
+
+  .hero-card-moving .pill-applied {
+    opacity: 1;
+  }
+}
+
+.hero-features {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  list-style: none;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.hero-features li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hero-features svg {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: #5ad1e6;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Telas menores: a coluna da esquerda some e fica só o login */
+@media (max-width: 900px) {
+  .auth-hero {
+    display: none;
+  }
+}

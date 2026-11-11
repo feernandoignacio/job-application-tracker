@@ -13,9 +13,48 @@
   margin-top: 4px;
 }
 
-/* Na tela de login o título fica centralizado, acima do cartão */
-.auth-header {
+/* Tela de login: duas colunas que ocupam a tela toda */
+.auth-page {
+  display: flex;
+  flex-wrap: wrap;
+  min-height: 100vh;
+  background: #f4f6f7;
+}
+
+.auth-panel {
+  flex: 1 1 420px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 28px;
+  padding: 48px 24px;
+}
+
+.auth-panel .auth-wrapper {
+  width: 100%;
+}
+
+/* Título que só aparece no celular */
+.auth-mobile-header {
+  display: none;
   text-align: center;
+}
+
+.auth-mobile-header h1 {
+  font-size: 1.6rem;
+  color: #0f2733;
+}
+
+.auth-mobile-header p {
+  margin-top: 4px;
+  color: rgba(15, 39, 51, 0.65);
+}
+
+@media (max-width: 900px) {
+  .auth-mobile-header {
+    display: block;
+  }
 }
 
 .application-list {

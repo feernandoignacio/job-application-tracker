@@ -5,6 +5,13 @@ export const translations = {
   en: {
     appTitle: 'Job Application Tracker',
     appSubtitle: 'Track every job application in one place.',
+    heroTitleStart: 'Your job search, ',
+    heroTitleHighlight: 'organized',
+    heroSubtitle:
+      'Track every application, see what stage it is in and never lose a follow up again.',
+    heroFeature1: 'Every application in one place',
+    heroFeature2: 'Status, notes and job links on each card',
+    heroFeature3: 'Free, private and in English or Portuguese',
     goodMorning: 'Good morning',
     goodAfternoon: 'Good afternoon',
     goodEvening: 'Good evening',
@@ -66,6 +73,13 @@ export const translations = {
   pt: {
     appTitle: 'Painel de Candidaturas',
     appSubtitle: 'Acompanhe todas as suas candidaturas em um só lugar.',
+    heroTitleStart: 'Sua busca por emprego, ',
+    heroTitleHighlight: 'organizada',
+    heroSubtitle:
+      'Registre cada candidatura, veja em que etapa ela está e nunca mais perca um retorno.',
+    heroFeature1: 'Todas as candidaturas em um só lugar',
+    heroFeature2: 'Status, anotações e link da vaga em cada card',
+    heroFeature3: 'Grátis, privado e em português ou inglês',
     goodMorning: 'Bom dia',
     goodAfternoon: 'Boa tarde',
     goodEvening: 'Boa noite',
