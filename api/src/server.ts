@@ -123,36 +123,6 @@ app.post('/auth/login', (request, response) => {
   response.json({ token, user: { id: user.id, email: user.email } });
 });
 
-// Faz login e devolve um token
-app.post('/auth/login', (request, response) => {
-  const { email, password } = request.body ?? {};
-
-  if (typeof email !== 'string' || typeof password !== 'string') {
-    response.status(400).json({ error: 'email and password are required' });
-    return;
-  }
-
-  const user = db
-    .prepare('SELECT id, email, password_hash FROM users WHERE email = ?')
-    .get(email.trim().toLowerCase()) as
-    { id: string; email: string; password_hash: string } | undefined;
-
-  if (!user || !verifyPassword(password, user.password_hash)) {
-    response.status(401).json({ error: 'invalid email or password' });
-    return;
-  }
-
-  const token = createToken();
-  const thirtyDays = 30 * 24 * 60 * 60 * 1000;
-  const expiresAt = new Date(Date.now() + thirtyDays).toISOString();
-
-  db.prepare(
-    'INSERT INTO sessions (token_hash, user_id, expires_at) VALUES (?, ?, ?)',
-  ).run(hashToken(token), user.id, expiresAt);
-
-  response.json({ token, user: { id: user.id, email: user.email } });
-});
-
 // Lista todas as candidaturas
 app.get('/applications', (_request, response) => {
   const rows = db
@@ -248,4 +218,3 @@ app.delete('/applications/:id', (request, response) => {
 app.listen(PORT, () => {
   console.log(`API rodando em http://localhost:${PORT}`);
 });
-// Lista todas as candidaturas
