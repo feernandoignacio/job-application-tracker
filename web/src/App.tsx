@@ -1,7 +1,14 @@
 import { useEffect, useState } from 'react';
 import ApplicationCard from './components/ApplicationCard';
 import ApplicationForm from './components/ApplicationForm';
-import { ApiError, getApplications } from './api';
+import {
+  ApiError,
+  createApplication,
+  deleteApplication,
+  getApplications,
+  updateApplicationStatus,
+} from './api';
+import type { NewApplication } from './api';
 import type { Application, ApplicationStatus } from './types/application';
 import AuthForm from './components/AuthForm';
 import './App.css';
@@ -29,6 +36,8 @@ function App() {
   // Começa "carregando" porque a busca na API sai logo de cara
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  // Erro ao salvar (criar, mudar status ou apagar)
+  const [actionError, setActionError] = useState('');
 
   // Quando tiver um token, busca as candidaturas na API
   useEffect(() => {
@@ -64,25 +73,67 @@ function App() {
   // Candidaturas que aparecem na tela, de acordo com o filtro escolhido
   const visibleApplications = filterApplications(selectedStatus);
 
-  // Remove a candidatura que tem este id
-  function handleDelete(id: string) {
-    setApplications(
-      applications.filter((application) => application.id !== id),
-    );
+  // Erro numa ação: 401 volta para o login, o resto mostra uma mensagem
+  function handleActionError(caught: unknown) {
+    if (caught instanceof ApiError && caught.status === 401) {
+      localStorage.removeItem(TOKEN_KEY);
+      setToken(null);
+      return;
+    }
+    setActionError('Something went wrong. Please try again.');
   }
 
-  // Troca o status da candidatura que tem este id
-  function handleStatusChange(id: string, status: ApplicationStatus) {
-    setApplications(
-      applications.map((application) =>
-        application.id === id ? { ...application, status } : application,
-      ),
-    );
+  // Apaga na API e, se der certo, tira da tela
+  async function handleDelete(id: string) {
+    if (!token) {
+      return;
+    }
+
+    try {
+      await deleteApplication(token, id);
+      setActionError('');
+      setApplications((current) =>
+        current.filter((application) => application.id !== id),
+      );
+    } catch (caught) {
+      handleActionError(caught);
+    }
   }
 
-  // Adiciona a nova candidatura no começo da lista
-  function handleAdd(newApplication: Application) {
-    setApplications([newApplication, ...applications]);
+  // Muda o status na API e, se der certo, atualiza na tela
+  async function handleStatusChange(id: string, status: ApplicationStatus) {
+    if (!token) {
+      return;
+    }
+
+    try {
+      const updated = await updateApplicationStatus(token, id, status);
+      setActionError('');
+      setApplications((current) =>
+        current.map((application) =>
+          application.id === id ? updated : application,
+        ),
+      );
+    } catch (caught) {
+      handleActionError(caught);
+    }
+  }
+
+  // Cria na API e coloca a candidatura nova no começo da lista
+  async function handleAdd(newApplication: NewApplication) {
+    if (!token) {
+      return false;
+    }
+
+    try {
+      const created = await createApplication(token, newApplication);
+      setActionError('');
+      setApplications((current) => [created, ...current]);
+      return true;
+    } catch (caught) {
+      handleActionError(caught);
+      return false;
+    }
   }
 
   // Guarda o token quando o login dá certo
@@ -115,6 +166,8 @@ function App() {
       </header>
 
       <ApplicationForm onAdd={handleAdd} />
+
+      {actionError && <p className="action-error">{actionError}</p>}
 
       <nav className="status-filter" aria-label="Filter by status">
         {filters.map((filter) => (

@@ -58,3 +58,10 @@
 .empty-message {
   color: rgba(31, 31, 31, 0.6);
 }
+
+/* Mensagem quando algo não salvou */
+.action-error {
+  margin-bottom: 16px;
+  font-size: 0.9rem;
+  color: #b42318;
+}

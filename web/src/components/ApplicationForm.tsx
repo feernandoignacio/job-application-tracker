@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import type { Application, ApplicationStatus } from '../types/application';
+import type { NewApplication } from '../api';
+import type { ApplicationStatus } from '../types/application';
 import './ApplicationForm.css';
 
 type ApplicationFormProps = {
-  onAdd: (application: Application) => void;
+  // Devolve true se salvou, para o formulário saber se pode limpar
+  onAdd: (application: NewApplication) => Promise<boolean>;
 };
 
 function ApplicationForm({ onAdd }: ApplicationFormProps) {
@@ -14,28 +16,26 @@ function ApplicationForm({ onAdd }: ApplicationFormProps) {
   const [status, setStatus] = useState<ApplicationStatus>('applied');
   const [jobUrl, setJobUrl] = useState('');
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     // Impede a página de recarregar (igual ao seu e.preventDefault())
     event.preventDefault();
 
-    const newApplication: Application = {
-      id: crypto.randomUUID(),
+    // O id e a data agora quem cria é a API
+    const saved = await onAdd({
       company: company.trim(),
       position: position.trim(),
       status,
-      // Data de hoje no formato AAAA-MM-DD
-      appliedAt: new Date().toLocaleDateString('en-CA'),
-      // Se o campo ficou vazio, não guarda link nenhum
+      // Se o campo ficou vazio, não manda link nenhum
       jobUrl: jobUrl.trim() || undefined,
-    };
+    });
 
-    onAdd(newApplication);
-
-    // Limpa o formulário
-    setCompany('');
-    setPosition('');
-    setStatus('applied');
-    setJobUrl('');
+    // Só limpa o formulário se salvou; se deu erro, o texto fica lá
+    if (saved) {
+      setCompany('');
+      setPosition('');
+      setStatus('applied');
+      setJobUrl('');
+    }
   }
 
   return (
