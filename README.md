@@ -14,6 +14,7 @@ A full stack web application to organize and track job applications. Each user c
 - Edit the details of an application and keep notes for each one
 - Filter applications by status, with a count for each one
 - Delete applications, with a confirmation step
+- Shows the name of the logged user at the top of the page
 - Log out from any device, which invalidates the session token
 - Each user only sees their own applications
 - Responsive layout for desktop and mobile
@@ -71,6 +72,7 @@ The front end calls `/api/...` and Vercel forwards these requests to the API. In
 | POST   | `/auth/register`    | No   | Creates an account            |
 | POST   | `/auth/login`       | No   | Returns a session token       |
 | POST   | `/auth/google`      | No   | Logs in with a Google account |
+| GET    | `/auth/me`          | Yes  | Returns the logged user       |
 | POST   | `/auth/logout`      | Yes  | Deletes the current session   |
 | GET    | `/applications`     | Yes  | Lists the user's applications |
 | POST   | `/applications`     | Yes  | Creates an application        |

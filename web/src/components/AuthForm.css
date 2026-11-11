@@ -1,53 +1,72 @@
+/* Cartão de login: branco, cantos bem arredondados e sombra suave */
 .auth-form {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  max-width: 360px;
+  gap: 18px;
+  max-width: 400px;
   margin: 0 auto;
-  padding: 24px;
+  padding: 32px;
   background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 10px;
+  border-radius: 16px;
+  box-shadow: 0 6px 28px rgba(15, 39, 51, 0.1);
 }
 
 .auth-form h2 {
-  font-size: 1.2rem;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #0f2733;
 }
 
 .auth-form label {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  font-size: 0.8rem;
-  color: rgba(31, 31, 31, 0.7);
+  gap: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #0f2733;
 }
 
 .auth-form input {
-  padding: 8px 10px;
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  border-radius: 6px;
+  padding: 11px 14px;
+  border: 1px solid #b9c2c7;
+  border-radius: 8px;
   font: inherit;
   font-size: 0.95rem;
-  color: #1f1f1f;
+  font-weight: 400;
+  color: #0f2733;
 }
 
-.auth-form button[type='submit'] {
-  padding: 10px;
+.auth-form input::placeholder {
+  color: #6b7a82;
+}
+
+.auth-form input:focus {
+  outline: none;
+  border-color: #0f2733;
+  box-shadow: 0 0 0 3px rgba(15, 39, 51, 0.12);
+}
+
+/* Botão principal: escuro quando pode enviar, cinza quando falta algo */
+.auth-submit {
+  padding: 12px;
   border: none;
-  border-radius: 6px;
-  background: #1f1f1f;
+  border-radius: 8px;
+  background: #0f2733;
   color: #ffffff;
   font: inherit;
+  font-weight: 600;
   cursor: pointer;
+  transition: background 0.15s;
 }
 
-.auth-form button[type='submit']:hover {
-  background: #3a3a3a;
+.auth-submit:hover:not(:disabled) {
+  background: #1d3d4d;
 }
 
-.auth-form button:disabled {
-  opacity: 0.6;
-  cursor: wait;
+.auth-submit:disabled {
+  background: #eceeef;
+  color: #9aa3a8;
+  cursor: not-allowed;
 }
 
 /* Botão com cara de link para trocar de tela */
@@ -56,9 +75,12 @@
   background: none;
   font: inherit;
   font-size: 0.85rem;
-  color: rgba(31, 31, 31, 0.7);
-  text-decoration: underline;
+  color: #2a6f8f;
   cursor: pointer;
+}
+
+.auth-toggle:hover {
+  text-decoration: underline;
 }
 
 .auth-error {
@@ -66,13 +88,13 @@
   color: #b42318;
 }
 
-/* Linha com "or" entre o login normal e o do Google */
+/* Linha com "or" entre o Google e o formulário */
 .auth-divider {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 0.8rem;
-  color: rgba(31, 31, 31, 0.5);
+  gap: 12px;
+  font-size: 0.85rem;
+  color: #8a969c;
 }
 
 .auth-divider::before,
@@ -80,7 +102,7 @@
   content: '';
   flex: 1;
   height: 1px;
-  background: rgba(0, 0, 0, 0.1);
+  background: #d9dee1;
 }
 
 /* Centraliza o botão que o Google desenha */
@@ -88,4 +110,11 @@
   display: flex;
   justify-content: center;
   min-height: 44px;
+}
+
+/* Celular: cartão ocupa a largura toda, com menos espaço interno */
+@media (max-width: 480px) {
+  .auth-form {
+    padding: 24px 20px;
+  }
 }

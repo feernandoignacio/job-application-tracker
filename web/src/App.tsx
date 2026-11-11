@@ -6,10 +6,11 @@ import {
   createApplication,
   deleteApplication,
   getApplications,
+  getMe,
   logout,
   updateApplication,
 } from './api';
-import type { NewApplication } from './api';
+import type { AuthUser, NewApplication } from './api';
 import type { Application, ApplicationStatus } from './types/application';
 import AuthForm from './components/AuthForm';
 import './App.css';
@@ -32,6 +33,9 @@ function App() {
   // Token do usuário logado (vazio = ninguém logado)
   const [token, setToken] = useState(() => localStorage.getItem(TOKEN_KEY));
 
+  // Quem está logado (para mostrar o nome no topo)
+  const [user, setUser] = useState<AuthUser | null>(null);
+
   // Lista de candidaturas (começa vazia e é preenchida pela API)
   const [applications, setApplications] = useState<Application[]>([]);
   // Começa "carregando" porque a busca na API sai logo de cara
@@ -45,6 +49,11 @@ function App() {
     if (!token) {
       return;
     }
+
+    // Busca o nome de quem está logado (se falhar, só não mostra o nome)
+    getMe(token)
+      .then(setUser)
+      .catch(() => setUser(null));
 
     getApplications(token)
       .then(setApplications)
@@ -156,6 +165,7 @@ function App() {
 
     localStorage.removeItem(TOKEN_KEY);
     setToken(null);
+    setUser(null);
     setApplications([]);
     setActionError('');
   }
@@ -164,7 +174,7 @@ function App() {
   if (!token) {
     return (
       <main className="app">
-        <header className="app-header">
+        <header className="app-header auth-header">
           <h1>Job Application Tracker</h1>
           <p>Track every job application in one place.</p>
         </header>
@@ -174,17 +184,30 @@ function App() {
     );
   }
 
+  // Nome para mostrar: o nome, ou o começo do email se não tiver nome
+  const displayName = user ? (user.name ?? user.email.split('@')[0]) : '';
+
   return (
     <main className="app">
-      <header className="app-header app-header-logged-in">
-        <div>
-          <h1>Job Application Tracker</h1>
-          <p>Track every job application in one place.</p>
-        </div>
+      {/* Barra do topo: quem está logado à esquerda, sair à direita */}
+      <div className="top-bar">
+        {user && (
+          <div className="user-info">
+            <span className="user-avatar" aria-hidden="true">
+              {displayName.charAt(0).toUpperCase()}
+            </span>
+            <span className="user-name">{displayName}</span>
+          </div>
+        )}
 
         <button type="button" className="logout-button" onClick={handleLogout}>
           Log out
         </button>
+      </div>
+
+      <header className="app-header">
+        <h1>Job Application Tracker</h1>
+        <p>Track every job application in one place.</p>
       </header>
 
       <ApplicationForm onAdd={handleAdd} />

@@ -25,6 +25,11 @@ await db.query(`
   ALTER TABLE users ALTER COLUMN password_hash DROP NOT NULL
 `);
 
+// Nome para mostrar no topo da tela (vem do cadastro ou do Google)
+await db.query(`
+  ALTER TABLE users ADD COLUMN IF NOT EXISTS name TEXT
+`);
+
 await db.query(`
   CREATE TABLE IF NOT EXISTS sessions (
     token_hash TEXT PRIMARY KEY,

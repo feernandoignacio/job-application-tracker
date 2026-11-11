@@ -126,7 +126,7 @@ app.get('/health', (_request, response) => {
 
 // Cadastra um usuário novo
 app.post('/auth/register', async (request, response) => {
-  const { email, password } = request.body ?? {};
+  const { email, password, name } = request.body ?? {};
 
   if (typeof email !== 'string' || !email.includes('@')) {
     response.status(400).json({ error: 'email is invalid' });
@@ -140,7 +140,13 @@ app.post('/auth/register', async (request, response) => {
     return;
   }
 
+  if (!isOptionalText(name)) {
+    response.status(400).json({ error: 'name must be text' });
+    return;
+  }
+
   const normalizedEmail = email.trim().toLowerCase();
+  const userName = optionalText(name);
 
   const existingUser = await db.query('SELECT id FROM users WHERE email = $1', [
     normalizedEmail,
@@ -154,11 +160,17 @@ app.post('/auth/register', async (request, response) => {
   const id = randomUUID();
 
   await db.query(
-    'INSERT INTO users (id, email, password_hash, created_at) VALUES ($1, $2, $3, $4)',
-    [id, normalizedEmail, hashPassword(password), new Date().toISOString()],
+    'INSERT INTO users (id, email, name, password_hash, created_at) VALUES ($1, $2, $3, $4, $5)',
+    [
+      id,
+      normalizedEmail,
+      userName ?? null,
+      hashPassword(password),
+      new Date().toISOString(),
+    ],
   );
 
-  response.status(201).json({ id, email: normalizedEmail });
+  response.status(201).json({ id, email: normalizedEmail, name: userName });
 });
 
 // Limite de tentativas de login: 5 erros em 15 minutos bloqueiam o email
@@ -195,8 +207,9 @@ app.post('/auth/login', async (request, response) => {
   const result = await db.query<{
     id: string;
     email: string;
+    name: string | null;
     password_hash: string | null;
-  }>('SELECT id, email, password_hash FROM users WHERE email = $1', [
+  }>('SELECT id, email, name, password_hash FROM users WHERE email = $1', [
     normalizedEmail,
   ]);
   const user = result.rows[0];
@@ -228,7 +241,10 @@ app.post('/auth/login', async (request, response) => {
 
   const token = await createSession(user.id);
 
-  response.json({ token, user: { id: user.id, email: user.email } });
+  response.json({
+    token,
+    user: { id: user.id, email: user.email, name: user.name ?? undefined },
+  });
 });
 
 // Confere os tokens que o Google entrega
@@ -252,6 +268,7 @@ app.post('/auth/google', async (request, response) => {
 
   // Pergunta ao Google se o token é verdadeiro e foi feito para este app
   let email: string | undefined;
+  let name: string | undefined;
 
   try {
     const ticket = await googleClient.verifyIdToken({
@@ -262,6 +279,7 @@ app.post('/auth/google', async (request, response) => {
 
     if (payload?.email && payload.email_verified) {
       email = payload.email.toLowerCase();
+      name = payload.name;
     }
   } catch {
     email = undefined;
@@ -279,17 +297,41 @@ app.post('/auth/google', async (request, response) => {
   );
   let userId = existing.rows[0]?.id;
 
-  if (!userId) {
+  if (userId) {
+    // Conta que já existia: se ainda não tinha nome, usa o do Google
+    await db.query('UPDATE users SET name = COALESCE(name, $1) WHERE id = $2', [
+      name ?? null,
+      userId,
+    ]);
+  } else {
     userId = randomUUID();
     await db.query(
-      'INSERT INTO users (id, email, password_hash, created_at) VALUES ($1, $2, NULL, $3)',
-      [userId, email, new Date().toISOString()],
+      'INSERT INTO users (id, email, name, password_hash, created_at) VALUES ($1, $2, $3, NULL, $4)',
+      [userId, email, name ?? null, new Date().toISOString()],
     );
   }
 
   const token = await createSession(userId);
 
-  response.json({ token, user: { id: userId, email } });
+  response.json({ token, user: { id: userId, email, name } });
+});
+
+// Devolve quem está logado (para mostrar o nome no topo da tela)
+app.get('/auth/me', requireAuth, async (_request, response) => {
+  const result = await db.query<{
+    id: string;
+    email: string;
+    name: string | null;
+  }>('SELECT id, email, name FROM users WHERE id = $1', [
+    response.locals.userId,
+  ]);
+  const user = result.rows[0];
+
+  response.json({
+    id: user.id,
+    email: user.email,
+    name: user.name ?? undefined,
+  });
 });
 
 // Faz logout: apaga a sessão, e o token para de funcionar

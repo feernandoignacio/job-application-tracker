@@ -16,6 +16,7 @@ export class ApiError extends Error {
 export type AuthUser = {
   id: string;
   email: string;
+  name?: string;
 };
 
 // Dados que o formulário manda para criar uma candidatura
@@ -58,10 +59,10 @@ async function request<T>(
   return data as T;
 }
 
-export function register(email: string, password: string) {
+export function register(email: string, password: string, name: string) {
   return request<AuthUser>('/auth/register', {
     method: 'POST',
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ email, password, name }),
   });
 }
 
@@ -82,6 +83,11 @@ export function loginWithGoogle(credential: string) {
 
 export function logout(token: string) {
   return request<void>('/auth/logout', { method: 'POST' }, token);
+}
+
+// Busca quem está logado (nome e email)
+export function getMe(token: string) {
+  return request<AuthUser>('/auth/me', {}, token);
 }
 
 export function getApplications(token: string) {

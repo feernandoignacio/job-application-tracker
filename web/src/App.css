@@ -13,6 +13,11 @@
   margin-top: 4px;
 }
 
+/* Na tela de login o título fica centralizado, acima do cartão */
+.auth-header {
+  text-align: center;
+}
+
 .application-list {
   list-style: none;
   display: flex;
@@ -66,16 +71,46 @@
   color: #b42318;
 }
 
-/* Cabeçalho com o botão de sair à direita */
-.app-header-logged-in {
+/* Barra do topo: usuário à esquerda, botão de sair à direita */
+.top-bar {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: flex-start;
   gap: 16px;
+  margin-bottom: 28px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+/* Bolinha com a primeira letra do nome */
+.user-avatar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #1f1f1f;
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.user-name {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .logout-button {
   flex-shrink: 0;
+  margin-left: auto;
   padding: 6px 14px;
   border: 1px solid rgba(0, 0, 0, 0.12);
   border-radius: 999px;

@@ -82,7 +82,8 @@ function GoogleButton({ onLogin, onError }: GoogleButtonProps) {
           shape: 'pill',
           text: 'continue_with',
           locale: 'en',
-          width: 312,
+          // Mesma largura do cartão (o Google aceita no máximo 400)
+          width: Math.min(buttonRef.current.offsetWidth, 400),
         });
       })
       .catch(() => onError('Could not load Google sign in.'));
@@ -95,8 +96,8 @@ function GoogleButton({ onLogin, onError }: GoogleButtonProps) {
 
   return (
     <>
-      <p className="auth-divider">or</p>
       <div className="google-button" ref={buttonRef} />
+      <p className="auth-divider">or</p>
     </>
   );
 }

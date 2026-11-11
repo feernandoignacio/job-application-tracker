@@ -130,6 +130,36 @@ describe('login', () => {
   });
 });
 
+describe('current user', () => {
+  test('returns the name and email of who is logged in', async () => {
+    const email = uniqueEmail();
+    await api('POST', '/auth/register', {
+      email,
+      password: 'password123',
+      name: 'Lucas',
+    });
+    const { data: login } = await api('POST', '/auth/login', {
+      email,
+      password: 'password123',
+    });
+
+    const { status, data } = await api(
+      'GET',
+      '/auth/me',
+      undefined,
+      login.token,
+    );
+    assert.equal(status, 200);
+    assert.equal(data.email, email);
+    assert.equal(data.name, 'Lucas');
+  });
+
+  test('requires a token', async () => {
+    const { status } = await api('GET', '/auth/me');
+    assert.equal(status, 401);
+  });
+});
+
 describe('google login', () => {
   test('rejects a request without credential', async () => {
     const { status } = await api('POST', '/auth/google', {});
