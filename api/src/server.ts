@@ -48,6 +48,18 @@ function toApplication(row: ApplicationRow): Application {
   };
 }
 
+// Texto opcional: devolve o texto sem espaços, ou undefined se vier vazio
+function optionalText(value: unknown): string | undefined {
+  return typeof value === 'string' && value.trim() !== ''
+    ? value.trim()
+    : undefined;
+}
+
+// Campo opcional válido: não veio, veio vazio (null) ou veio como texto
+function isOptionalText(value: unknown) {
+  return value === undefined || value === null || typeof value === 'string';
+}
+
 // Busca uma candidatura, mas só se ela for deste usuário
 async function findApplication(
   id: string,
@@ -190,7 +202,7 @@ app.get('/applications', requireAuth, async (_request, response) => {
 
 // Cria uma candidatura nova
 app.post('/applications', requireAuth, async (request, response) => {
-  const { company, position, status, jobUrl } = request.body ?? {};
+  const { company, position, status, jobUrl, notes } = request.body ?? {};
 
   if (typeof company !== 'string' || company.trim() === '') {
     response.status(400).json({ error: 'company is required' });
@@ -207,21 +219,24 @@ app.post('/applications', requireAuth, async (request, response) => {
     return;
   }
 
+  if (!isOptionalText(jobUrl) || !isOptionalText(notes)) {
+    response.status(400).json({ error: 'jobUrl and notes must be text' });
+    return;
+  }
+
   const newApplication: Application = {
     id: randomUUID(),
     company: company.trim(),
     position: position.trim(),
     status,
     appliedAt: new Date().toLocaleDateString('en-CA'),
-    jobUrl:
-      typeof jobUrl === 'string' && jobUrl.trim() !== ''
-        ? jobUrl.trim()
-        : undefined,
+    jobUrl: optionalText(jobUrl),
+    notes: optionalText(notes),
   };
 
   await db.query(
-    `INSERT INTO applications (id, user_id, company, position, status, applied_at, job_url, created_at)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+    `INSERT INTO applications (id, user_id, company, position, status, applied_at, job_url, notes, created_at)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
     [
       newApplication.id,
       response.locals.userId,
@@ -230,6 +245,7 @@ app.post('/applications', requireAuth, async (request, response) => {
       newApplication.status,
       newApplication.appliedAt,
       newApplication.jobUrl ?? null,
+      newApplication.notes ?? null,
       new Date().toISOString(),
     ],
   );
@@ -237,7 +253,7 @@ app.post('/applications', requireAuth, async (request, response) => {
   response.status(201).json(newApplication);
 });
 
-// Muda o status de uma candidatura
+// Edita uma candidatura (só os campos enviados mudam)
 app.patch(
   '/applications/:id',
   requireAuth,
@@ -252,19 +268,60 @@ app.patch(
       return;
     }
 
-    const { status } = request.body ?? {};
+    const { company, position, status, jobUrl, notes } = request.body ?? {};
 
-    if (!validStatuses.includes(status)) {
+    // Se o campo veio, ele precisa ser válido
+    if (
+      company !== undefined &&
+      (typeof company !== 'string' || company.trim() === '')
+    ) {
+      response.status(400).json({ error: 'company is invalid' });
+      return;
+    }
+
+    if (
+      position !== undefined &&
+      (typeof position !== 'string' || position.trim() === '')
+    ) {
+      response.status(400).json({ error: 'position is invalid' });
+      return;
+    }
+
+    if (status !== undefined && !validStatuses.includes(status)) {
       response.status(400).json({ error: 'status is invalid' });
       return;
     }
 
-    await db.query('UPDATE applications SET status = $1 WHERE id = $2', [
-      status,
-      application.id,
-    ]);
+    if (!isOptionalText(jobUrl) || !isOptionalText(notes)) {
+      response.status(400).json({ error: 'jobUrl and notes must be text' });
+      return;
+    }
 
-    response.json({ ...application, status });
+    // Junta o que já existia com o que mudou
+    const updated: Application = {
+      ...application,
+      company: company?.trim() ?? application.company,
+      position: position?.trim() ?? application.position,
+      status: status ?? application.status,
+      jobUrl: jobUrl === undefined ? application.jobUrl : optionalText(jobUrl),
+      notes: notes === undefined ? application.notes : optionalText(notes),
+    };
+
+    await db.query(
+      `UPDATE applications
+       SET company = $1, position = $2, status = $3, job_url = $4, notes = $5
+       WHERE id = $6`,
+      [
+        updated.company,
+        updated.position,
+        updated.status,
+        updated.jobUrl ?? null,
+        updated.notes ?? null,
+        updated.id,
+      ],
+    );
+
+    response.json(updated);
   },
 );
 

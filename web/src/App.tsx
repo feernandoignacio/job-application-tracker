@@ -7,7 +7,7 @@ import {
   deleteApplication,
   getApplications,
   logout,
-  updateApplicationStatus,
+  updateApplication,
 } from './api';
 import type { NewApplication } from './api';
 import type { Application, ApplicationStatus } from './types/application';
@@ -101,22 +101,24 @@ function App() {
     }
   }
 
-  // Muda o status na API e, se der certo, atualiza na tela
-  async function handleStatusChange(id: string, status: ApplicationStatus) {
+  // Muda campos na API e, se der certo, atualiza na tela
+  async function handleUpdate(id: string, changes: Partial<NewApplication>) {
     if (!token) {
-      return;
+      return false;
     }
 
     try {
-      const updated = await updateApplicationStatus(token, id, status);
+      const updated = await updateApplication(token, id, changes);
       setActionError('');
       setApplications((current) =>
         current.map((application) =>
           application.id === id ? updated : application,
         ),
       );
+      return true;
     } catch (caught) {
       handleActionError(caught);
+      return false;
     }
   }
 
@@ -222,7 +224,7 @@ function App() {
               key={application.id}
               application={application}
               onDelete={handleDelete}
-              onStatusChange={handleStatusChange}
+              onUpdate={handleUpdate}
             />
           ))}
         </ul>

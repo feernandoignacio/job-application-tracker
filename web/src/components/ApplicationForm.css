@@ -24,13 +24,18 @@
 }
 
 .application-form input,
-.application-form select {
+.application-form select,
+.application-form textarea {
   padding: 8px 10px;
   border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 6px;
   font: inherit;
   font-size: 0.95rem;
   color: #1f1f1f;
+}
+
+.application-form textarea {
+  resize: vertical;
 }
 
 .application-form button {

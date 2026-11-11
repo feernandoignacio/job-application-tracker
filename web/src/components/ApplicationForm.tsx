@@ -15,6 +15,7 @@ function ApplicationForm({ onAdd }: ApplicationFormProps) {
   const [position, setPosition] = useState('');
   const [status, setStatus] = useState<ApplicationStatus>('applied');
   const [jobUrl, setJobUrl] = useState('');
+  const [notes, setNotes] = useState('');
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     // Impede a página de recarregar (igual ao seu e.preventDefault())
@@ -27,6 +28,7 @@ function ApplicationForm({ onAdd }: ApplicationFormProps) {
       status,
       // Se o campo ficou vazio, não manda link nenhum
       jobUrl: jobUrl.trim() || undefined,
+      notes: notes.trim() || undefined,
     });
 
     // Só limpa o formulário se salvou; se deu erro, o texto fica lá
@@ -35,6 +37,7 @@ function ApplicationForm({ onAdd }: ApplicationFormProps) {
       setPosition('');
       setStatus('applied');
       setJobUrl('');
+      setNotes('');
     }
   }
 
@@ -82,6 +85,16 @@ function ApplicationForm({ onAdd }: ApplicationFormProps) {
           value={jobUrl}
           onChange={(event) => setJobUrl(event.target.value)}
           placeholder="https://"
+        />
+      </label>
+
+      <label className="full-width">
+        Notes (optional)
+        <textarea
+          value={notes}
+          onChange={(event) => setNotes(event.target.value)}
+          placeholder="Recruiter name, salary, next steps..."
+          rows={2}
         />
       </label>
 

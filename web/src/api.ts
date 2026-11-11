@@ -24,6 +24,7 @@ export type NewApplication = {
   position: string;
   status: ApplicationStatus;
   jobUrl?: string;
+  notes?: string;
 };
 
 type LoginResponse = {
@@ -87,14 +88,15 @@ export function createApplication(token: string, application: NewApplication) {
   );
 }
 
-export function updateApplicationStatus(
+// Manda só os campos que mudaram (ex.: só o status, ou o formulário de edição)
+export function updateApplication(
   token: string,
   id: string,
-  status: ApplicationStatus,
+  changes: Partial<NewApplication>,
 ) {
   return request<Application>(
     `/applications/${id}`,
-    { method: 'PATCH', body: JSON.stringify({ status }) },
+    { method: 'PATCH', body: JSON.stringify(changes) },
     token,
   );
 }

@@ -13,6 +13,12 @@
   font-size: 1.1rem;
 }
 
+/* Espaço para os botões do canto não ficarem por cima do texto */
+.application-company,
+.application-position {
+  padding-right: 130px;
+}
+
 .application-position {
   color: rgba(31, 31, 31, 0.7);
 }
@@ -63,21 +69,91 @@
   color: #a12828;
 }
 
-/* Botão de apagar */
-.delete-button {
+/* Anotações da candidatura (mantém as quebras de linha) */
+.application-notes {
+  margin-top: 4px;
+  font-size: 0.85rem;
+  color: rgba(31, 31, 31, 0.7);
+  white-space: pre-wrap;
+}
+
+/* Botões de editar e apagar, no canto do card */
+.card-actions {
   position: absolute;
   top: 16px;
   right: 20px;
+  display: flex;
+  gap: 6px;
+}
+
+.card-button {
   padding: 4px 10px;
   border: 1px solid rgba(0, 0, 0, 0.12);
   border-radius: 6px;
   background: transparent;
   font: inherit;
   font-size: 0.8rem;
-  color: #a12828;
+  color: #1f1f1f;
   cursor: pointer;
+}
+
+.card-button:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.delete-button {
+  color: #a12828;
 }
 
 .delete-button:hover {
   background: #fde2e2;
+}
+
+/* Modo edição */
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.edit-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: rgba(31, 31, 31, 0.7);
+}
+
+.edit-form input,
+.edit-form textarea {
+  padding: 8px 10px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 6px;
+  font: inherit;
+  font-size: 0.95rem;
+  color: #1f1f1f;
+}
+
+.edit-form textarea {
+  resize: vertical;
+}
+
+.edit-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.save-button {
+  padding: 6px 16px;
+  border: none;
+  border-radius: 6px;
+  background: #1f1f1f;
+  color: #ffffff;
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.save-button:hover {
+  background: #3a3a3a;
 }
