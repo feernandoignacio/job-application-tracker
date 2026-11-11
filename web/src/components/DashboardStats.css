@@ -1,0 +1,63 @@
+/* 4 caixinhas lado a lado com os números do resumo */
+.dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px 20px;
+  border-radius: 16px;
+}
+
+.stat dt {
+  font-size: 0.85rem;
+  font-weight: 600;
+  opacity: 0.85;
+}
+
+.stat dd {
+  font-size: 1.9rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+/* Cada caixinha com a cor da sua etapa */
+.stat-total {
+  background: #0f2733;
+  color: #ffffff;
+}
+
+.stat-applied {
+  background: #e3ecff;
+  color: #2348a8;
+}
+
+.stat-interview {
+  background: #fff3d6;
+  color: #8a5a00;
+}
+
+.stat-offer {
+  background: #dff5e3;
+  color: #1d6b32;
+}
+
+/* Celular: 2 por linha */
+@media (max-width: 700px) {
+  .dashboard-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .stat {
+    padding: 14px 16px;
+  }
+
+  .stat dd {
+    font-size: 1.6rem;
+  }
+}

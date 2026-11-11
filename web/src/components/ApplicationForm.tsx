@@ -46,12 +46,15 @@ function ApplicationForm({ onAdd }: ApplicationFormProps) {
 
   return (
     <form className="application-form" onSubmit={handleSubmit}>
+      <h2>{t('newApplication')}</h2>
+
       <label>
         {t('company')}
         <input
           type="text"
           value={company}
           onChange={(event) => setCompany(event.target.value)}
+          placeholder={t('companyPlaceholder')}
           required
         />
       </label>
@@ -62,6 +65,7 @@ function ApplicationForm({ onAdd }: ApplicationFormProps) {
           type="text"
           value={position}
           onChange={(event) => setPosition(event.target.value)}
+          placeholder={t('positionPlaceholder')}
           required
         />
       </label>
@@ -81,7 +85,7 @@ function ApplicationForm({ onAdd }: ApplicationFormProps) {
         </select>
       </label>
 
-      <label className="full-width">
+      <label>
         {t('jobUrlOptional')}
         <input
           type="url"
@@ -91,13 +95,13 @@ function ApplicationForm({ onAdd }: ApplicationFormProps) {
         />
       </label>
 
-      <label className="full-width">
+      <label>
         {t('notesOptional')}
         <textarea
           value={notes}
           onChange={(event) => setNotes(event.target.value)}
           placeholder={t('notesPlaceholder')}
-          rows={2}
+          rows={3}
         />
       </label>
 

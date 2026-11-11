@@ -125,58 +125,93 @@ function ApplicationCard({
   }
 
   return (
-    <li className="application-card">
-      <strong className="application-company">{application.company}</strong>
-      <span className="application-position">{application.position}</span>
+    <li className={`application-card card-${application.status}`}>
+      {/* Topo: inicial da empresa, nome, cargo e os botões de editar e apagar */}
+      <div className="card-header">
+        <span className="company-initial" aria-hidden="true">
+          {application.company.charAt(0).toUpperCase()}
+        </span>
 
-      <span className="application-date">
-        {t('appliedOn', {
-          date: formatDate(application.appliedAt, language),
-        })}
-      </span>
+        <div className="card-title">
+          <strong className="application-company">{application.company}</strong>
+          <span className="application-position">{application.position}</span>
+        </div>
 
-      {application.jobUrl && (
-        <a
-          className="application-link"
-          href={application.jobUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {t('viewJob')}
-        </a>
-      )}
+        <div className="card-actions">
+          <button
+            type="button"
+            className="icon-button"
+            onClick={startEditing}
+            aria-label={t('edit')}
+            title={t('edit')}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 20h4L19 9l-4-4L4 16v4z" />
+              <path d="M14 6l4 4" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            className="icon-button delete-button"
+            onClick={handleDelete}
+            aria-label={t('delete')}
+            title={t('delete')}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 7h16" />
+              <path d="M10 11v6M14 11v6" />
+              <path d="M6 7l1 13h10l1-13" />
+              <path d="M9 7V4h6v3" />
+            </svg>
+          </button>
+        </div>
+      </div>
 
       {application.notes && (
         <p className="application-notes">{application.notes}</p>
       )}
 
-      <select
-        className={`status status-${application.status}`}
-        value={application.status}
-        onChange={(event) =>
-          onUpdate(application.id, {
-            status: event.target.value as ApplicationStatus,
-          })
-        }
-        aria-label={t('statusOf', { company: application.company })}
-      >
-        <option value="applied">{t('applied')}</option>
-        <option value="interview">{t('interview')}</option>
-        <option value="offer">{t('offer')}</option>
-        <option value="rejected">{t('rejected')}</option>
-      </select>
-
-      <div className="card-actions">
-        <button type="button" className="card-button" onClick={startEditing}>
-          {t('edit')}
-        </button>
-        <button
-          type="button"
-          className="card-button delete-button"
-          onClick={handleDelete}
+      {/* Embaixo: status, link da vaga e data */}
+      <div className="card-footer">
+        <select
+          className={`status status-${application.status}`}
+          value={application.status}
+          onChange={(event) =>
+            onUpdate(application.id, {
+              status: event.target.value as ApplicationStatus,
+            })
+          }
+          aria-label={t('statusOf', { company: application.company })}
         >
-          {t('delete')}
-        </button>
+          <option value="applied">{t('applied')}</option>
+          <option value="interview">{t('interview')}</option>
+          <option value="offer">{t('offer')}</option>
+          <option value="rejected">{t('rejected')}</option>
+        </select>
+
+        <div className="card-meta">
+          {application.jobUrl && (
+            <a
+              className="application-link"
+              href={application.jobUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {t('viewJob')}
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M14 4h6v6" />
+                <path d="M20 4l-9 9" />
+                <path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" />
+              </svg>
+            </a>
+          )}
+
+          <span className="application-date">
+            {t('appliedOn', {
+              date: formatDate(application.appliedAt, language),
+            })}
+          </span>
+        </div>
       </div>
     </li>
   );

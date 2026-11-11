@@ -1,112 +1,185 @@
+/* Card de cada candidatura: branco, arredondado e com sombra leve */
 .application-card {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 16px 20px;
+  gap: 12px;
+  padding: 20px;
   background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 10px;
-  position: relative;
+  border-radius: 16px;
+  box-shadow: 0 2px 10px rgba(15, 39, 51, 0.06);
+}
+
+/* Cada status tem um par de cores: fundo claro e texto escuro */
+.card-applied {
+  --status-bg: #e3ecff;
+  --status-fg: #2348a8;
+}
+
+.card-interview {
+  --status-bg: #fff3d6;
+  --status-fg: #8a5a00;
+}
+
+.card-offer {
+  --status-bg: #dff5e3;
+  --status-fg: #1d6b32;
+}
+
+.card-rejected {
+  --status-bg: #fde2e2;
+  --status-fg: #a12828;
+}
+
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+/* Quadradinho com a primeira letra da empresa, na cor do status */
+.company-initial {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--status-bg);
+  color: var(--status-fg);
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.card-title {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
 }
 
 .application-company {
-  font-size: 1.1rem;
-}
-
-/* Espaço para os botões do canto não ficarem por cima do texto */
-.application-company,
-.application-position {
-  padding-right: 130px;
+  font-size: 1rem;
+  color: #0f2733;
+  overflow-wrap: anywhere;
 }
 
 .application-position {
-  color: rgba(31, 31, 31, 0.7);
+  font-size: 0.9rem;
+  color: #4b5d66;
 }
 
-/* Data e link da vaga */
-.application-date {
-  font-size: 0.8rem;
-  color: rgba(31, 31, 31, 0.5);
+/* Botões de editar e apagar: só o ícone */
+.card-actions {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
 }
 
-.application-link {
-  align-self: flex-start;
-  font-size: 0.8rem;
-  color: #2348a8;
-}
-
-/* Etiqueta do status */
-.status {
-  align-self: flex-start;
-  margin-top: 8px;
-  padding: 2px 10px;
+.icon-button {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
   border: none;
-  border-radius: 999px;
-  font: inherit;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  border-radius: 10px;
+  background: transparent;
+  color: #4b5d66;
   cursor: pointer;
 }
 
-.status-applied {
-  background: #e3ecff;
-  color: #2348a8;
+.icon-button svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
-.status-interview {
-  background: #fff3d6;
-  color: #8a5a00;
+.icon-button:hover {
+  background: #f1f5f7;
+  color: #0f2733;
 }
 
-.status-offer {
-  background: #dff5e3;
-  color: #1d6b32;
+.icon-button.delete-button {
+  color: #a12828;
 }
 
-.status-rejected {
+.icon-button.delete-button:hover {
   background: #fde2e2;
   color: #a12828;
 }
 
-/* Anotações da candidatura (mantém as quebras de linha) */
+/* Anotações num fundo cinza-claro, mantendo as quebras de linha */
 .application-notes {
-  margin-top: 4px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #f4f6f7;
   font-size: 0.85rem;
-  color: rgba(31, 31, 31, 0.7);
+  line-height: 1.45;
+  color: #3d5059;
   white-space: pre-wrap;
 }
 
-/* Botões de editar e apagar, no canto do card */
-.card-actions {
-  position: absolute;
-  top: 16px;
-  right: 20px;
+.card-footer {
   display: flex;
-  gap: 6px;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px 12px;
+  margin-top: auto;
 }
 
-.card-button {
+/* Etiqueta do status (dá para clicar e trocar) */
+.status {
   padding: 4px 10px;
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  border-radius: 6px;
-  background: transparent;
+  border: none;
+  border-radius: 999px;
+  background: var(--status-bg);
+  color: var(--status-fg);
   font: inherit;
-  font-size: 0.8rem;
-  color: #1f1f1f;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
   cursor: pointer;
 }
 
-.card-button:hover {
-  background: rgba(0, 0, 0, 0.04);
+.card-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 14px;
 }
 
-.delete-button {
-  color: #a12828;
+.application-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #2a6f8f;
+  text-decoration: none;
 }
 
-.delete-button:hover {
-  background: #fde2e2;
+.application-link:hover {
+  text-decoration: underline;
+}
+
+.application-link svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.application-date {
+  font-size: 0.78rem;
+  color: #6b7a82;
 }
 
 /* Modo edição */
@@ -120,18 +193,27 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  font-size: 0.8rem;
-  color: rgba(31, 31, 31, 0.7);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #0f2733;
 }
 
 .edit-form input,
 .edit-form textarea {
-  padding: 8px 10px;
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  border-radius: 6px;
+  padding: 9px 12px;
+  border: 1px solid #b9c2c7;
+  border-radius: 8px;
   font: inherit;
   font-size: 0.95rem;
-  color: #1f1f1f;
+  font-weight: 400;
+  color: #0f2733;
+}
+
+.edit-form input:focus,
+.edit-form textarea:focus {
+  outline: none;
+  border-color: #0f2733;
+  box-shadow: 0 0 0 3px rgba(15, 39, 51, 0.12);
 }
 
 .edit-form textarea {
@@ -144,16 +226,33 @@
 }
 
 .save-button {
-  padding: 6px 16px;
+  padding: 8px 18px;
   border: none;
-  border-radius: 6px;
-  background: #1f1f1f;
+  border-radius: 8px;
+  background: #0f2733;
   color: #ffffff;
   font: inherit;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
+  font-weight: 700;
   cursor: pointer;
 }
 
 .save-button:hover {
-  background: #3a3a3a;
+  background: #1d3d4d;
+}
+
+.card-button {
+  padding: 8px 18px;
+  border: 1px solid #d9dee1;
+  border-radius: 8px;
+  background: transparent;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #0f2733;
+  cursor: pointer;
+}
+
+.card-button:hover {
+  background: #f1f5f7;
 }

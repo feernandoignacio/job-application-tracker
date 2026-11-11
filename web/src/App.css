@@ -1,18 +1,3 @@
-.app {
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 40px 20px;
-}
-
-.app-header {
-  margin-bottom: 32px;
-}
-
-.app-header p {
-  color: rgba(31, 31, 31, 0.6);
-  margin-top: 4px;
-}
-
 /* Tela de login: duas colunas do tamanho exato da tela, sem rolagem */
 .auth-page {
   display: flex;
@@ -70,57 +55,7 @@
   }
 }
 
-.application-list {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-/* Botões de filtro */
-.status-filter {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 24px;
-}
-
-.filter-button {
-  padding: 6px 14px;
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  border-radius: 999px;
-  background: #ffffff;
-  font: inherit;
-  font-size: 0.85rem;
-  cursor: pointer;
-}
-
-.filter-button:hover {
-  background: rgba(0, 0, 0, 0.04);
-}
-
-.filter-button.active {
-  background: #1f1f1f;
-  border-color: #1f1f1f;
-  color: #ffffff;
-}
-
-/* Número ao lado de cada filtro */
-.filter-count {
-  margin-left: 6px;
-  opacity: 0.6;
-}
-
-.empty-message {
-  color: rgba(31, 31, 31, 0.6);
-}
-
-/* Mensagem quando algo não salvou */
-.action-error {
-  margin-bottom: 16px;
-  font-size: 0.9rem;
-  color: #b42318;
-}
+/* ===== Parte interna (painel) ===== */
 
 /* Barra do topo: ocupa a largura toda da tela */
 .top-bar {
@@ -128,15 +63,42 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 16px 32px;
+  padding: 14px 32px;
   background: #ffffff;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  border-bottom: 1px solid rgba(15, 39, 51, 0.08);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f2733;
+}
+
+.brand-logo {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: #5ad1e6;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.top-bar-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-left: auto;
 }
 
 .user-info {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   min-width: 0;
 }
 
@@ -145,12 +107,11 @@
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  width: 42px;
-  height: 42px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background: #0f2733;
   color: #ffffff;
-  font-size: 1.05rem;
   font-weight: 700;
 }
 
@@ -161,25 +122,18 @@
 }
 
 .user-name {
-  font-size: 1.15rem;
-  font-weight: 700;
+  font-weight: 600;
   color: #0f2733;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+/* No computador a saudação fica no título grande, então aqui some */
 .user-greeting {
-  font-size: 0.85rem;
-  color: rgba(15, 39, 51, 0.6);
-}
-
-/* Lado direito da barra: idioma e botão de sair */
-.top-bar-actions {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-left: auto;
+  display: none;
+  font-size: 0.8rem;
+  color: #6b7a82;
 }
 
 /* Botão de sair: contorno arredondado que escurece ao passar o mouse */
@@ -188,7 +142,7 @@
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
-  padding: 9px 18px;
+  padding: 8px 16px;
   border: 1px solid #0f2733;
   border-radius: 999px;
   background: transparent;
@@ -202,7 +156,8 @@
     color 0.15s;
 }
 
-.logout-button svg {
+.logout-button svg,
+.new-application-toggle svg {
   width: 18px;
   height: 18px;
   fill: none;
@@ -217,10 +172,187 @@
   color: #ffffff;
 }
 
-/* Celular: menos espaço nas laterais */
-@media (max-width: 600px) {
+/* Conteúdo do painel */
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px;
+}
+
+.dashboard-header h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #0f2733;
+}
+
+.dashboard-header p {
+  margin-top: 6px;
+  color: #4b5d66;
+}
+
+/* Lista à esquerda e formulário à direita; no celular um embaixo do outro */
+.dashboard-columns {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 28px;
+}
+
+.dashboard-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 999 1 560px;
+  min-width: 0;
+}
+
+.dashboard-form {
+  flex: 1 1 320px;
+  min-width: 0;
+}
+
+/* Cards em grade: 2 por linha quando cabe, 1 em telas estreitas */
+.application-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  list-style: none;
+}
+
+/* Botões de filtro */
+.status-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filter-button {
+  padding: 8px 16px;
+  border: 1px solid #d9dee1;
+  border-radius: 999px;
+  background: #ffffff;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #0f2733;
+  cursor: pointer;
+}
+
+.filter-button:hover {
+  background: #f1f5f7;
+}
+
+.filter-button.active {
+  background: #0f2733;
+  border-color: #0f2733;
+  color: #ffffff;
+}
+
+/* Número ao lado de cada filtro */
+.filter-count {
+  margin-left: 6px;
+  opacity: 0.6;
+}
+
+.empty-message {
+  color: #4b5d66;
+}
+
+/* Mensagem quando algo não salvou */
+.action-error {
+  font-size: 0.9rem;
+  color: #b42318;
+}
+
+/* Botão "Nova candidatura": só existe no celular */
+.new-application-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  border: none;
+  border-radius: 12px;
+  background: #0f2733;
+  color: #ffffff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Celular */
+@media (max-width: 700px) {
   .top-bar {
-    padding: 12px 16px;
+    padding: 10px 16px;
+  }
+
+  /* O logo sai; ficam o usuário com a saudação e o botão de sair */
+  .brand {
+    display: none;
+  }
+
+  .top-bar-actions {
+    width: 100%;
+    gap: 8px;
+  }
+
+  .user-info {
+    order: -1;
+    margin-right: auto;
+  }
+
+  .user-greeting {
+    display: block;
+  }
+
+  /* Botão de sair vira só o ícone */
+  .logout-label {
+    display: none;
+  }
+
+  .logout-button {
+    width: 44px;
+    height: 44px;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .dashboard {
+    gap: 18px;
+    padding: 20px 16px;
+  }
+
+  .dashboard-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .new-application-toggle {
+    display: flex;
+  }
+
+  /* Formulário fechado até a pessoa tocar no botão; quando abre, vem antes da lista */
+  .dashboard-form {
+    display: none;
+    order: -1;
+  }
+
+  .dashboard-form.open {
+    display: block;
+  }
+
+  /* Filtros deslizam para o lado em vez de quebrar linha */
+  .status-filter {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .filter-button {
+    flex-shrink: 0;
   }
 }
 

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import ApplicationCard from './components/ApplicationCard';
 import ApplicationForm from './components/ApplicationForm';
+import DashboardStats from './components/DashboardStats';
 import {
   ApiError,
   createApplication,
@@ -87,6 +88,9 @@ function App() {
       })
       .finally(() => setLoading(false));
   }, [token]);
+
+  // No celular o formulário fica fechado e abre pelo botão "Nova candidatura"
+  const [showForm, setShowForm] = useState(false);
 
   // Filtro escolhido no momento (começa em "todos")
   const [selectedStatus, setSelectedStatus] = useState<StatusFilter>('all');
@@ -211,92 +215,150 @@ function App() {
 
   // Nome para mostrar: o nome, ou o começo do email se não tiver nome
   const displayName = user ? (user.name ?? user.email.split('@')[0]) : '';
+  // Na saudação grande usa só o primeiro nome
+  const firstName = displayName.split(' ')[0];
+
+  // Frase de resumo embaixo da saudação
+  const summary =
+    applications.length === 0
+      ? t('summaryEmpty')
+      : t('summary', {
+          interviews: String(filterApplications('interview').length),
+          offers: String(filterApplications('offer').length),
+        });
+
+  // Adiciona e, no celular, fecha o formulário se deu certo
+  async function handleAddFromForm(newApplication: NewApplication) {
+    const saved = await handleAdd(newApplication);
+    if (saved) {
+      setShowForm(false);
+    }
+    return saved;
+  }
 
   return (
     <>
-      {/* Barra do topo, na largura toda: usuário à esquerda, sair à direita */}
+      {/* Barra do topo, na largura toda: logo à esquerda, usuário e sair à direita */}
       <header className="top-bar">
-        {user && (
-          <div className="user-info">
-            <span className="user-avatar" aria-hidden="true">
-              {displayName.charAt(0).toUpperCase()}
-            </span>
-            <div className="user-text">
-              <span className="user-name">{displayName}</span>
-              <span className="user-greeting">{t(getGreetingKey())}</span>
-            </div>
-          </div>
-        )}
+        <div className="brand">
+          <span className="brand-logo" aria-hidden="true">
+            JT
+          </span>
+          <span className="brand-name">{t('appTitle')}</span>
+        </div>
 
-        {/* Lado direito: idioma e botão de sair */}
         <div className="top-bar-actions">
           <LanguageSelect direction="down" />
+
+          {user && (
+            <div className="user-info">
+              <span className="user-avatar" aria-hidden="true">
+                {displayName.charAt(0).toUpperCase()}
+              </span>
+              <div className="user-text">
+                <span className="user-name">{displayName}</span>
+                {/* A saudação aqui só aparece no celular */}
+                <span className="user-greeting">{t(getGreetingKey())}</span>
+              </div>
+            </div>
+          )}
 
           <button
             type="button"
             className="logout-button"
             onClick={handleLogout}
+            aria-label={t('logOut')}
           >
             <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
               <path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3" />
               <path d="M10 17l-5-5 5-5" />
               <path d="M5 12h11" />
             </svg>
-            {t('logOut')}
+            <span className="logout-label">{t('logOut')}</span>
           </button>
         </div>
       </header>
 
-      <main className="app">
-        <header className="app-header">
-          <h1>{t('appTitle')}</h1>
-          <p>{t('appSubtitle')}</p>
+      <main className="dashboard">
+        <header className="dashboard-header">
+          <h1>
+            {t('greetingName', {
+              greeting: t(getGreetingKey()),
+              name: firstName,
+            })}
+          </h1>
+          {!loading && !error && <p>{summary}</p>}
         </header>
 
-        <ApplicationForm onAdd={handleAdd} />
+        <DashboardStats applications={applications} />
 
         {actionError && (
           <p className="action-error">{t(actionError as TranslationKey)}</p>
         )}
 
-        <nav className="status-filter" aria-label={t('filterByStatus')}>
-          {filters.map((filter) => (
-            <button
-              key={filter}
-              type="button"
-              className={
-                filter === selectedStatus
-                  ? 'filter-button active'
-                  : 'filter-button'
-              }
-              onClick={() => setSelectedStatus(filter)}
-            >
-              {t(filter)}
-              <span className="filter-count">
-                {filterApplications(filter).length}
-              </span>
-            </button>
-          ))}
-        </nav>
+        {/* Só aparece no celular: abre e fecha o formulário */}
+        <button
+          type="button"
+          className="new-application-toggle"
+          onClick={() => setShowForm(!showForm)}
+          aria-expanded={showForm}
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d={showForm ? 'M5 12h14' : 'M12 5v14M5 12h14'} />
+          </svg>
+          {t('newApplication')}
+        </button>
 
-        {loading ? (
-          <p className="empty-message">{t('loading')}</p>
-        ) : error ? (
-          <p className="empty-message">{t(error as TranslationKey)}</p>
-        ) : visibleApplications.length === 0 ? (
-          <p className="empty-message">{t('noApplications')}</p>
-        ) : (
-          <ul className="application-list">
-            {visibleApplications.map((application) => (
-              <ApplicationCard
-                key={application.id}
-                application={application}
-                onDelete={handleDelete}
-                onUpdate={handleUpdate}
-              />
-            ))}
-          </ul>
-        )}
+        <div className="dashboard-columns">
+          {/* Esquerda: filtros e lista de candidaturas */}
+          <section className="dashboard-list">
+            <nav className="status-filter" aria-label={t('filterByStatus')}>
+              {filters.map((filter) => (
+                <button
+                  key={filter}
+                  type="button"
+                  className={
+                    filter === selectedStatus
+                      ? 'filter-button active'
+                      : 'filter-button'
+                  }
+                  onClick={() => setSelectedStatus(filter)}
+                >
+                  {t(filter)}
+                  <span className="filter-count">
+                    {filterApplications(filter).length}
+                  </span>
+                </button>
+              ))}
+            </nav>
+
+            {loading ? (
+              <p className="empty-message">{t('loading')}</p>
+            ) : error ? (
+              <p className="empty-message">{t(error as TranslationKey)}</p>
+            ) : visibleApplications.length === 0 ? (
+              <p className="empty-message">{t('noApplications')}</p>
+            ) : (
+              <ul className="application-list">
+                {visibleApplications.map((application) => (
+                  <ApplicationCard
+                    key={application.id}
+                    application={application}
+                    onDelete={handleDelete}
+                    onUpdate={handleUpdate}
+                  />
+                ))}
+              </ul>
+            )}
+          </section>
+
+          {/* Direita: formulário de nova candidatura */}
+          <aside
+            className={showForm ? 'dashboard-form open' : 'dashboard-form'}
+          >
+            <ApplicationForm onAdd={handleAddFromForm} />
+          </aside>
+        </div>
       </main>
     </>
   );
