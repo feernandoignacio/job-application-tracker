@@ -32,6 +32,7 @@ type ApplicationRow = {
   applied_at: string;
   job_url: string | null;
   notes: string | null;
+  interview_at: string | null;
 };
 
 // Converte uma linha do banco para o formato usado na API
@@ -44,6 +45,7 @@ function toApplication(row: ApplicationRow): Application {
     appliedAt: row.applied_at,
     jobUrl: row.job_url ?? undefined,
     notes: row.notes ?? undefined,
+    interviewAt: row.interview_at ?? undefined,
   };
 }
 
@@ -57,6 +59,16 @@ function optionalText(value: unknown): string | undefined {
 // Campo opcional válido: não veio, veio vazio (null) ou veio como texto
 function isOptionalText(value: unknown) {
   return value === undefined || value === null || typeof value === 'string';
+}
+
+// Data opcional: não veio, veio vazia (null ou "") ou no formato AAAA-MM-DD
+function isOptionalDate(value: unknown) {
+  return (
+    value === undefined ||
+    value === null ||
+    value === '' ||
+    (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value))
+  );
 }
 
 // Busca uma candidatura, mas só se ela for deste usuário
@@ -360,7 +372,8 @@ app.get('/applications', requireAuth, async (_request, response) => {
 
 // Cria uma candidatura nova
 app.post('/applications', requireAuth, async (request, response) => {
-  const { company, position, status, jobUrl, notes } = request.body ?? {};
+  const { company, position, status, jobUrl, notes, interviewAt } =
+    request.body ?? {};
 
   if (typeof company !== 'string' || company.trim() === '') {
     response.status(400).json({ error: 'company is required' });
@@ -382,6 +395,11 @@ app.post('/applications', requireAuth, async (request, response) => {
     return;
   }
 
+  if (!isOptionalDate(interviewAt)) {
+    response.status(400).json({ error: 'interviewAt is invalid' });
+    return;
+  }
+
   const newApplication: Application = {
     id: randomUUID(),
     company: company.trim(),
@@ -390,11 +408,12 @@ app.post('/applications', requireAuth, async (request, response) => {
     appliedAt: new Date().toLocaleDateString('en-CA'),
     jobUrl: optionalText(jobUrl),
     notes: optionalText(notes),
+    interviewAt: optionalText(interviewAt),
   };
 
   await db.query(
-    `INSERT INTO applications (id, user_id, company, position, status, applied_at, job_url, notes, created_at)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+    `INSERT INTO applications (id, user_id, company, position, status, applied_at, job_url, notes, interview_at, created_at)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
     [
       newApplication.id,
       response.locals.userId,
@@ -404,6 +423,7 @@ app.post('/applications', requireAuth, async (request, response) => {
       newApplication.appliedAt,
       newApplication.jobUrl ?? null,
       newApplication.notes ?? null,
+      newApplication.interviewAt ?? null,
       new Date().toISOString(),
     ],
   );
@@ -426,7 +446,8 @@ app.patch(
       return;
     }
 
-    const { company, position, status, jobUrl, notes } = request.body ?? {};
+    const { company, position, status, jobUrl, notes, interviewAt } =
+      request.body ?? {};
 
     // Se o campo veio, ele precisa ser válido
     if (
@@ -455,6 +476,11 @@ app.patch(
       return;
     }
 
+    if (!isOptionalDate(interviewAt)) {
+      response.status(400).json({ error: 'interviewAt is invalid' });
+      return;
+    }
+
     // Junta o que já existia com o que mudou
     const updated: Application = {
       ...application,
@@ -463,18 +489,24 @@ app.patch(
       status: status ?? application.status,
       jobUrl: jobUrl === undefined ? application.jobUrl : optionalText(jobUrl),
       notes: notes === undefined ? application.notes : optionalText(notes),
+      interviewAt:
+        interviewAt === undefined
+          ? application.interviewAt
+          : optionalText(interviewAt),
     };
 
     await db.query(
       `UPDATE applications
-       SET company = $1, position = $2, status = $3, job_url = $4, notes = $5
-       WHERE id = $6`,
+       SET company = $1, position = $2, status = $3, job_url = $4, notes = $5,
+           interview_at = $6
+       WHERE id = $7`,
       [
         updated.company,
         updated.position,
         updated.status,
         updated.jobUrl ?? null,
         updated.notes ?? null,
+        updated.interviewAt ?? null,
         updated.id,
       ],
     );

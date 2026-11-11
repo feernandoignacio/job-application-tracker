@@ -19,6 +19,7 @@ function ApplicationForm({ onAdd }: ApplicationFormProps) {
   const [status, setStatus] = useState<ApplicationStatus>('applied');
   const [jobUrl, setJobUrl] = useState('');
   const [notes, setNotes] = useState('');
+  const [interviewAt, setInterviewAt] = useState('');
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     // Impede a página de recarregar (igual ao seu e.preventDefault())
@@ -32,6 +33,9 @@ function ApplicationForm({ onAdd }: ApplicationFormProps) {
       // Se o campo ficou vazio, não manda link nenhum
       jobUrl: jobUrl.trim() || undefined,
       notes: notes.trim() || undefined,
+      // A data só vale se o status for Entrevista
+      interviewAt:
+        status === 'interview' && interviewAt ? interviewAt : undefined,
     });
 
     // Só limpa o formulário se salvou; se deu erro, o texto fica lá
@@ -41,6 +45,7 @@ function ApplicationForm({ onAdd }: ApplicationFormProps) {
       setStatus('applied');
       setJobUrl('');
       setNotes('');
+      setInterviewAt('');
     }
   }
 
@@ -84,6 +89,17 @@ function ApplicationForm({ onAdd }: ApplicationFormProps) {
           <option value="rejected">{t('rejected')}</option>
         </select>
       </label>
+
+      {status === 'interview' && (
+        <label>
+          {t('interviewDateOptional')}
+          <input
+            type="date"
+            value={interviewAt}
+            onChange={(event) => setInterviewAt(event.target.value)}
+          />
+        </label>
+      )}
 
       <label>
         {t('jobUrlOptional')}

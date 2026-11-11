@@ -64,3 +64,8 @@ await db.query(`
   CREATE INDEX IF NOT EXISTS login_attempts_email_idx
   ON login_attempts (email, attempted_at)
 `);
+
+// Dia marcado para a entrevista (coluna nova, por isso o ADD COLUMN)
+await db.query(`
+  ALTER TABLE applications ADD COLUMN IF NOT EXISTS interview_at TEXT
+`);

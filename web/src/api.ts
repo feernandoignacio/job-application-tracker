@@ -26,6 +26,8 @@ export type NewApplication = {
   status: ApplicationStatus;
   jobUrl?: string;
   notes?: string;
+  // null apaga a data da entrevista
+  interviewAt?: string | null;
 };
 
 type LoginResponse = {

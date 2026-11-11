@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
+import { useClickOutside } from '../hooks/useClickOutside';
 import { useLanguage } from '../i18n/LanguageContext';
 import type { Language } from '../i18n/translations';
 import './LanguageSelect.css';
@@ -21,32 +22,7 @@ function LanguageSelect({ direction = 'up' }: LanguageSelectProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Fecha a lista ao clicar fora dela ou apertar Esc
-  useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
-
-    function handleClickOutside(event: MouseEvent) {
-      if (!containerRef.current?.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    }
-
-    function handleEscape(event: KeyboardEvent) {
-      if (event.key === 'Escape') {
-        setIsOpen(false);
-      }
-    }
-
-    document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('keydown', handleEscape);
-
-    // Limpa os "ouvintes" quando a lista fecha
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('keydown', handleEscape);
-    };
-  }, [isOpen]);
+  useClickOutside(containerRef, isOpen, () => setIsOpen(false));
 
   function choose(value: Language) {
     setLanguage(value);

@@ -221,6 +221,41 @@ describe('applications', () => {
     assert.equal(empty.data.length, 0);
   });
 
+  test('save and clear the interview date', async () => {
+    const { token } = await createUser();
+    const created = await api(
+      'POST',
+      '/applications',
+      { company: 'Acme', position: 'Developer', status: 'applied' },
+      token,
+    );
+    const id = created.data.id;
+
+    const scheduled = await api(
+      'PATCH',
+      `/applications/${id}`,
+      { status: 'interview', interviewAt: '2026-12-01' },
+      token,
+    );
+    assert.equal(scheduled.data.interviewAt, '2026-12-01');
+
+    const invalid = await api(
+      'PATCH',
+      `/applications/${id}`,
+      { interviewAt: 'tomorrow' },
+      token,
+    );
+    assert.equal(invalid.status, 400);
+
+    const cleared = await api(
+      'PATCH',
+      `/applications/${id}`,
+      { interviewAt: null },
+      token,
+    );
+    assert.equal(cleared.data.interviewAt, undefined);
+  });
+
   test('validate the fields', async () => {
     const { token } = await createUser();
     const { status } = await api(

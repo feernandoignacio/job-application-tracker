@@ -1,0 +1,199 @@
+/* A janelinha "flutua" em relação a este bloco */
+.status-select {
+  position: relative;
+}
+
+/* Etiqueta colorida com o triângulo ao lado */
+.status-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px 5px 12px;
+  border: none;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.status-trigger.status-applied {
+  background: #e3ecff;
+  color: #2348a8;
+}
+
+.status-trigger.status-interview {
+  background: #fff3d6;
+  color: #8a5a00;
+}
+
+.status-trigger.status-offer {
+  background: #dff5e3;
+  color: #1d6b32;
+}
+
+.status-trigger.status-rejected {
+  background: #fde2e2;
+  color: #a12828;
+}
+
+.status-arrow {
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid currentColor;
+  transition: transform 0.15s;
+}
+
+.status-arrow.open {
+  transform: rotate(180deg);
+}
+
+/* A janelinha: mesmo estilo da de idiomas */
+.status-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 20;
+  min-width: 190px;
+  padding: 8px;
+  list-style: none;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 8px 28px rgba(15, 39, 51, 0.16);
+  animation: status-menu-in 0.12s ease-out;
+}
+
+.status-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #0f2733;
+  text-align: left;
+  cursor: pointer;
+}
+
+.status-option:hover {
+  background: #f1f5f7;
+}
+
+.status-option.selected {
+  color: #2a6f8f;
+}
+
+/* Bolinha com a cor de cada status */
+.status-dot {
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.dot-applied {
+  background: #2348a8;
+}
+
+.dot-interview {
+  background: #d99a00;
+}
+
+.dot-offer {
+  background: #1d6b32;
+}
+
+.dot-rejected {
+  background: #a12828;
+}
+
+.status-check {
+  width: 16px;
+  height: 16px;
+  margin-left: auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Versão com calendário */
+.status-calendar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 280px;
+  padding: 14px;
+}
+
+.status-calendar-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #0f2733;
+}
+
+.status-back {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #0f2733;
+  cursor: pointer;
+}
+
+.status-back:hover {
+  background: #f1f5f7;
+}
+
+.status-back svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.status-skip {
+  align-self: flex-end;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #2a6f8f;
+  cursor: pointer;
+}
+
+.status-skip:hover {
+  background: rgba(42, 111, 143, 0.08);
+}
+
+@keyframes status-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

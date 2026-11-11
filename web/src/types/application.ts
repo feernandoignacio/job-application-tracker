@@ -8,4 +8,6 @@ export type Application = {
   appliedAt: string;
   jobUrl?: string;
   notes?: string;
+  // Dia da entrevista, no formato AAAA-MM-DD
+  interviewAt?: string;
 };

@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import type { NewApplication } from '../api';
-import type { Application, ApplicationStatus } from '../types/application';
+import type { Application } from '../types/application';
 import { formatDate } from '../utils/formatDate';
+import StatusSelect from './StatusSelect';
 import './ApplicationCard.css';
 import { useLanguage } from '../i18n/LanguageContext';
 
@@ -173,21 +174,12 @@ function ApplicationCard({
 
       {/* Embaixo: status, link da vaga e data */}
       <div className="card-footer">
-        <select
-          className={`status status-${application.status}`}
+        <StatusSelect
           value={application.status}
-          onChange={(event) =>
-            onUpdate(application.id, {
-              status: event.target.value as ApplicationStatus,
-            })
-          }
-          aria-label={t('statusOf', { company: application.company })}
-        >
-          <option value="applied">{t('applied')}</option>
-          <option value="interview">{t('interview')}</option>
-          <option value="offer">{t('offer')}</option>
-          <option value="rejected">{t('rejected')}</option>
-        </select>
+          interviewAt={application.interviewAt}
+          onChange={(changes) => onUpdate(application.id, changes)}
+          label={t('statusOf', { company: application.company })}
+        />
 
         <div className="card-meta">
           {application.jobUrl && (
@@ -206,10 +198,15 @@ function ApplicationCard({
             </a>
           )}
 
+          {/* Em entrevista com dia marcado, mostra o dia; senão, quando enviou */}
           <span className="application-date">
-            {t('appliedOn', {
-              date: formatDate(application.appliedAt, language),
-            })}
+            {application.status === 'interview' && application.interviewAt
+              ? t('interviewOn', {
+                  date: formatDate(application.interviewAt, language),
+                })
+              : t('appliedOn', {
+                  date: formatDate(application.appliedAt, language),
+                })}
           </span>
         </div>
       </div>

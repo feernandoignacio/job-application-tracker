@@ -1,0 +1,87 @@
+.date-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Linha de cima: seta, nome do mês, seta */
+.date-picker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.date-picker-month {
+  font-weight: 700;
+  color: #0f2733;
+}
+
+.date-picker-arrow {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #0f2733;
+  cursor: pointer;
+}
+
+.date-picker-arrow:hover {
+  background: #f1f5f7;
+}
+
+.date-picker-arrow svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* 7 colunas: uma para cada dia da semana */
+.date-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 2px;
+}
+
+.date-picker-weekday {
+  padding: 4px 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #6b7a82;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.date-picker-day {
+  aspect-ratio: 1;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  font: inherit;
+  font-size: 0.85rem;
+  color: #0f2733;
+  cursor: pointer;
+}
+
+.date-picker-day:hover {
+  background: #f1f5f7;
+}
+
+/* Hoje: com contorno */
+.date-picker-day.today {
+  box-shadow: inset 0 0 0 1px #2a6f8f;
+  font-weight: 700;
+}
+
+/* Dia escolhido: preenchido */
+.date-picker-day.selected {
+  background: #0f2733;
+  color: #ffffff;
+  font-weight: 700;
+}
