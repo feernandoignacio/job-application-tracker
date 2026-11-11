@@ -161,14 +161,14 @@ describe('current user', () => {
 });
 
 describe('google login', () => {
-  test('rejects a request without credential', async () => {
+  test('rejects a request without token', async () => {
     const { status } = await api('POST', '/auth/google', {});
     assert.equal(status, 400);
   });
 
-  test('rejects a fake credential', async () => {
+  test('rejects a fake token', async () => {
     const { status } = await api('POST', '/auth/google', {
-      credential: 'fake-credential',
+      accessToken: 'fake-token',
     });
     // 503 quando o Google não está configurado (como no CI), 401 quando está
     assert.ok(status === 401 || status === 503);

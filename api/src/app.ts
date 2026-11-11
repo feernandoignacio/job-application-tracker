@@ -250,12 +250,12 @@ app.post('/auth/login', async (request, response) => {
 // Confere os tokens que o Google entrega
 const googleClient = new OAuth2Client();
 
-// Login com Google: o front manda o "credential" que o Google gerou
+// Login com Google: o front manda o "access token" que o Google entregou
 app.post('/auth/google', async (request, response) => {
-  const { credential } = request.body ?? {};
+  const { accessToken } = request.body ?? {};
 
-  if (typeof credential !== 'string' || credential === '') {
-    response.status(400).json({ error: 'credential is required' });
+  if (typeof accessToken !== 'string' || accessToken === '') {
+    response.status(400).json({ error: 'accessToken is required' });
     return;
   }
 
@@ -266,20 +266,27 @@ app.post('/auth/google', async (request, response) => {
     return;
   }
 
-  // Pergunta ao Google se o token é verdadeiro e foi feito para este app
   let email: string | undefined;
   let name: string | undefined;
 
   try {
-    const ticket = await googleClient.verifyIdToken({
-      idToken: credential,
-      audience: clientId,
-    });
-    const payload = ticket.getPayload();
+    // 1. Pergunta ao Google se o token é verdadeiro e foi feito para ESTE app
+    const tokenInfo = await googleClient.getTokenInfo(accessToken);
 
-    if (payload?.email && payload.email_verified) {
-      email = payload.email.toLowerCase();
-      name = payload.name;
+    if (
+      tokenInfo.aud === clientId &&
+      tokenInfo.email &&
+      tokenInfo.email_verified
+    ) {
+      email = tokenInfo.email.toLowerCase();
+
+      // 2. Busca o nome da pessoa no perfil do Google
+      const profileResponse = await fetch(
+        'https://www.googleapis.com/oauth2/v3/userinfo',
+        { headers: { Authorization: `Bearer ${accessToken}` } },
+      );
+      const profile = (await profileResponse.json()) as { name?: string };
+      name = profile.name;
     }
   } catch {
     email = undefined;

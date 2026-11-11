@@ -14,7 +14,7 @@ A full stack web application to organize and track job applications. Each user c
 - Edit the details of an application and keep notes for each one
 - Filter applications by status, with a count for each one
 - Delete applications, with a confirmation step
-- Shows the name of the logged user at the top of the page
+- Shows the name of the logged user and a greeting based on the time of day
 - Log out from any device, which invalidates the session token
 - Each user only sees their own applications
 - Responsive layout for desktop and mobile
@@ -54,7 +54,7 @@ The front end calls `/api/...` and Vercel forwards these requests to the API. In
 
 ## Security
 
-- Google sign in sends an ID token that the API verifies with Google before creating the session
+- Google sign in sends an access token that the API checks with Google, including that it was issued for this app, before creating the session
 - Passwords are hashed with **scrypt** and a random salt, so they are never stored in plain text
 - Login returns a random session token. Only its **SHA-256 hash** is stored in the database
 - Sessions expire after 30 days, and logging out deletes the session

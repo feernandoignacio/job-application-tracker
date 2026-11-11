@@ -21,6 +21,19 @@ type StatusFilter = 'all' | ApplicationStatus;
 // Gaveta onde fica o token de login
 const TOKEN_KEY = 'auth-token';
 
+// Bom dia, boa tarde ou boa noite, de acordo com a hora do computador
+function getGreeting() {
+  const hour = new Date().getHours();
+
+  if (hour < 12) {
+    return 'Good morning';
+  }
+  if (hour < 18) {
+    return 'Good afternoon';
+  }
+  return 'Good evening';
+}
+
 const filters: StatusFilter[] = [
   'all',
   'applied',
@@ -188,71 +201,81 @@ function App() {
   const displayName = user ? (user.name ?? user.email.split('@')[0]) : '';
 
   return (
-    <main className="app">
-      {/* Barra do topo: quem está logado à esquerda, sair à direita */}
-      <div className="top-bar">
+    <>
+      {/* Barra do topo, na largura toda: usuário à esquerda, sair à direita */}
+      <header className="top-bar">
         {user && (
           <div className="user-info">
             <span className="user-avatar" aria-hidden="true">
               {displayName.charAt(0).toUpperCase()}
             </span>
-            <span className="user-name">{displayName}</span>
+            <div className="user-text">
+              <span className="user-name">{displayName}</span>
+              <span className="user-greeting">{getGreeting()}</span>
+            </div>
           </div>
         )}
 
         <button type="button" className="logout-button" onClick={handleLogout}>
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3" />
+            <path d="M10 17l-5-5 5-5" />
+            <path d="M5 12h11" />
+          </svg>
           Log out
         </button>
-      </div>
-
-      <header className="app-header">
-        <h1>Job Application Tracker</h1>
-        <p>Track every job application in one place.</p>
       </header>
 
-      <ApplicationForm onAdd={handleAdd} />
+      <main className="app">
+        <header className="app-header">
+          <h1>Job Application Tracker</h1>
+          <p>Track every job application in one place.</p>
+        </header>
 
-      {actionError && <p className="action-error">{actionError}</p>}
+        <ApplicationForm onAdd={handleAdd} />
 
-      <nav className="status-filter" aria-label="Filter by status">
-        {filters.map((filter) => (
-          <button
-            key={filter}
-            type="button"
-            className={
-              filter === selectedStatus
-                ? 'filter-button active'
-                : 'filter-button'
-            }
-            onClick={() => setSelectedStatus(filter)}
-          >
-            {filter}
-            <span className="filter-count">
-              {filterApplications(filter).length}
-            </span>
-          </button>
-        ))}
-      </nav>
+        {actionError && <p className="action-error">{actionError}</p>}
 
-      {loading ? (
-        <p className="empty-message">Loading...</p>
-      ) : error ? (
-        <p className="empty-message">{error}</p>
-      ) : visibleApplications.length === 0 ? (
-        <p className="empty-message">No applications with this status.</p>
-      ) : (
-        <ul className="application-list">
-          {visibleApplications.map((application) => (
-            <ApplicationCard
-              key={application.id}
-              application={application}
-              onDelete={handleDelete}
-              onUpdate={handleUpdate}
-            />
+        <nav className="status-filter" aria-label="Filter by status">
+          {filters.map((filter) => (
+            <button
+              key={filter}
+              type="button"
+              className={
+                filter === selectedStatus
+                  ? 'filter-button active'
+                  : 'filter-button'
+              }
+              onClick={() => setSelectedStatus(filter)}
+            >
+              {filter}
+              <span className="filter-count">
+                {filterApplications(filter).length}
+              </span>
+            </button>
           ))}
-        </ul>
-      )}
-    </main>
+        </nav>
+
+        {loading ? (
+          <p className="empty-message">Loading...</p>
+        ) : error ? (
+          <p className="empty-message">{error}</p>
+        ) : visibleApplications.length === 0 ? (
+          <p className="empty-message">No applications with this status.</p>
+        ) : (
+          <ul className="application-list">
+            {visibleApplications.map((application) => (
+              <ApplicationCard
+                key={application.id}
+                application={application}
+                onDelete={handleDelete}
+                onUpdate={handleUpdate}
+              />
+            ))}
+          </ul>
+        )}
+      </main>
+    </>
   );
 }
 

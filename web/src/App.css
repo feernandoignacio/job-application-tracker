@@ -71,19 +71,21 @@
   color: #b42318;
 }
 
-/* Barra do topo: usuário à esquerda, botão de sair à direita */
+/* Barra do topo: ocupa a largura toda da tela */
 .top-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 28px;
+  padding: 16px 32px;
+  background: #ffffff;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .user-info {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   min-width: 0;
 }
 
@@ -92,34 +94,74 @@
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  width: 32px;
-  height: 32px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
-  background: #1f1f1f;
+  background: #0f2733;
   color: #ffffff;
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.user-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 
 .user-name {
-  font-weight: 600;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0f2733;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+.user-greeting {
+  font-size: 0.85rem;
+  color: rgba(15, 39, 51, 0.6);
+}
+
+/* Botão de sair: contorno arredondado que escurece ao passar o mouse */
 .logout-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   flex-shrink: 0;
   margin-left: auto;
-  padding: 6px 14px;
-  border: 1px solid rgba(0, 0, 0, 0.12);
+  padding: 9px 18px;
+  border: 1px solid #0f2733;
   border-radius: 999px;
-  background: #ffffff;
+  background: transparent;
   font: inherit;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #0f2733;
   cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.logout-button svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .logout-button:hover {
-  background: rgba(0, 0, 0, 0.04);
+  background: #0f2733;
+  color: #ffffff;
+}
+
+/* Celular: menos espaço nas laterais */
+@media (max-width: 600px) {
+  .top-bar {
+    padding: 12px 16px;
+  }
 }

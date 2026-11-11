@@ -105,11 +105,37 @@
   background: #d9dee1;
 }
 
-/* Centraliza o botão que o Google desenha */
+/* Botão "Continue with Google": branco, arredondado, logo à esquerda */
 .google-button {
+  position: relative;
   display: flex;
+  align-items: center;
   justify-content: center;
-  min-height: 44px;
+  padding: 11px 16px;
+  border: 1px solid #b9c2c7;
+  border-radius: 999px;
+  background: #ffffff;
+  font: inherit;
+  font-weight: 500;
+  color: #0f2733;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.google-button:hover:not(:disabled) {
+  background: #f3f6f8;
+}
+
+.google-button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.google-logo {
+  position: absolute;
+  left: 16px;
+  width: 20px;
+  height: 20px;
 }
 
 /* Celular: cartão ocupa a largura toda, com menos espaço interno */
