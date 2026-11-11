@@ -1,4 +1,4 @@
-/* Coluna escura da esquerda, com textura leve de pontinhos */
+/* Bloco escuro da esquerda: cantos orgânicos e textura leve de pontinhos */
 .auth-hero {
   flex: 1 1 560px;
   min-width: 0;
@@ -6,7 +6,10 @@
   flex-direction: column;
   justify-content: center;
   gap: 40px;
-  padding: 56px 64px;
+  margin: 20px 0 20px 20px;
+  padding: 56px 96px 56px 64px;
+  /* Cada canto com uma curva diferente: pouco à esquerda, bem curvo à direita */
+  border-radius: 36px 46% 38% 36px / 36px 30% 42% 36px;
   background-color: #0f2733;
   background-image: radial-gradient(
     rgba(255, 255, 255, 0.09) 1px,
@@ -32,16 +35,8 @@
   border-radius: 9px;
   background: #5ad1e6;
   color: #0f2733;
-}
-
-.hero-logo svg {
-  width: 20px;
-  height: 20px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+  font-size: 0.9rem;
+  font-weight: 800;
 }
 
 .hero-text {

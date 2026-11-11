@@ -21,11 +21,9 @@ function AuthHero() {
   return (
     <section className="auth-hero">
       <div className="hero-brand">
+        {/* Logo: as iniciais de Job Tracker */}
         <span className="hero-logo" aria-hidden="true">
-          <svg viewBox="0 0 24 24">
-            <rect x="3" y="7" width="18" height="13" rx="2" />
-            <path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
-          </svg>
+          JT
         </span>
         {t('appTitle')}
       </div>
