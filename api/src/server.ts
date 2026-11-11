@@ -63,6 +63,41 @@ app.post('/applications', (request, response) => {
   response.status(201).json(newApplication);
 });
 
+// Muda o status de uma candidatura
+app.patch('/applications/:id', (request, response) => {
+  const application = applications.find(
+    (item) => item.id === request.params.id,
+  );
+
+  if (!application) {
+    response.status(404).json({ error: 'application not found' });
+    return;
+  }
+
+  const { status } = request.body ?? {};
+
+  if (!validStatuses.includes(status)) {
+    response.status(400).json({ error: 'status is invalid' });
+    return;
+  }
+
+  application.status = status;
+  response.json(application);
+});
+
+// Apaga uma candidatura
+app.delete('/applications/:id', (request, response) => {
+  const index = applications.findIndex((item) => item.id === request.params.id);
+
+  if (index === -1) {
+    response.status(404).json({ error: 'application not found' });
+    return;
+  }
+
+  applications.splice(index, 1);
+  response.status(204).send();
+});
+
 app.listen(PORT, () => {
   console.log(`API rodando em http://localhost:${PORT}`);
 });
