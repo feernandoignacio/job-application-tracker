@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import ApplicationCard from './components/ApplicationCard';
 import ApplicationForm from './components/ApplicationForm';
-import { sampleApplications } from './data/sampleApplications';
+import { ApiError, getApplications } from './api';
 import type { Application, ApplicationStatus } from './types/application';
 import AuthForm from './components/AuthForm';
 import './App.css';
@@ -9,17 +9,8 @@ import './App.css';
 // O filtro pode ser "todos" ou um dos status
 type StatusFilter = 'all' | ApplicationStatus;
 
-// Nome da "gaveta" onde a lista fica guardada no navegador
-const STORAGE_KEY = 'job-applications';
-
 // Gaveta onde fica o token de login
 const TOKEN_KEY = 'auth-token';
-
-// Lê a lista salva; se não tiver nada, usa os exemplos
-function loadApplications(): Application[] {
-  const saved = localStorage.getItem(STORAGE_KEY);
-  return saved ? JSON.parse(saved) : sampleApplications;
-}
 
 const filters: StatusFilter[] = [
   'all',
@@ -33,14 +24,31 @@ function App() {
   // Token do usuário logado (vazio = ninguém logado)
   const [token, setToken] = useState(() => localStorage.getItem(TOKEN_KEY));
 
-  // Lista de candidaturas (começa com o que estiver salvo)
-  const [applications, setApplications] =
-    useState<Application[]>(loadApplications);
+  // Lista de candidaturas (começa vazia e é preenchida pela API)
+  const [applications, setApplications] = useState<Application[]>([]);
+  // Começa "carregando" porque a busca na API sai logo de cara
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  // Sempre que a lista mudar, salva no navegador
+  // Quando tiver um token, busca as candidaturas na API
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(applications));
-  }, [applications]);
+    if (!token) {
+      return;
+    }
+
+    getApplications(token)
+      .then(setApplications)
+      .catch((caught) => {
+        // Token vencido ou inválido: volta para o login
+        if (caught instanceof ApiError && caught.status === 401) {
+          localStorage.removeItem(TOKEN_KEY);
+          setToken(null);
+          return;
+        }
+        setError('Could not load your applications.');
+      })
+      .finally(() => setLoading(false));
+  }, [token]);
 
   // Filtro escolhido no momento (começa em "todos")
   const [selectedStatus, setSelectedStatus] = useState<StatusFilter>('all');
@@ -80,6 +88,8 @@ function App() {
   // Guarda o token quando o login dá certo
   function handleLogin(newToken: string) {
     localStorage.setItem(TOKEN_KEY, newToken);
+    setLoading(true);
+    setError('');
     setToken(newToken);
   }
 
@@ -126,7 +136,11 @@ function App() {
         ))}
       </nav>
 
-      {visibleApplications.length === 0 ? (
+      {loading ? (
+        <p className="empty-message">Loading...</p>
+      ) : error ? (
+        <p className="empty-message">{error}</p>
+      ) : visibleApplications.length === 0 ? (
         <p className="empty-message">No applications with this status.</p>
       ) : (
         <ul className="application-list">
