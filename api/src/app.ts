@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import express from 'express';
+import { OAuth2Client } from 'google-auth-library';
 import type { NextFunction, Request, Response } from 'express';
 import { db } from './database.ts';
 import {
@@ -69,6 +70,20 @@ async function findApplication(
   );
   const row = result.rows[0];
   return row ? toApplication(row) : undefined;
+}
+
+// Cria uma sessão de 30 dias e devolve o token (usado no login normal e no Google)
+async function createSession(userId: string) {
+  const token = createToken();
+  const thirtyDays = 30 * 24 * 60 * 60 * 1000;
+  const expiresAt = new Date(Date.now() + thirtyDays).toISOString();
+
+  await db.query(
+    'INSERT INTO sessions (token_hash, user_id, expires_at) VALUES ($1, $2, $3)',
+    [hashToken(token), userId, expiresAt],
+  );
+
+  return token;
 }
 
 // "Porteiro": só deixa passar quem mandar um token válido
@@ -180,13 +195,18 @@ app.post('/auth/login', async (request, response) => {
   const result = await db.query<{
     id: string;
     email: string;
-    password_hash: string;
+    password_hash: string | null;
   }>('SELECT id, email, password_hash FROM users WHERE email = $1', [
     normalizedEmail,
   ]);
   const user = result.rows[0];
 
-  if (!user || !verifyPassword(password, user.password_hash)) {
+  // Conta criada pelo Google não tem senha, então não entra por aqui
+  if (
+    !user ||
+    !user.password_hash ||
+    !verifyPassword(password, user.password_hash)
+  ) {
     // Registra o erro e apaga os registros antigos deste email
     await db.query(
       'DELETE FROM login_attempts WHERE email = $1 AND attempted_at <= $2',
@@ -206,16 +226,70 @@ app.post('/auth/login', async (request, response) => {
     normalizedEmail,
   ]);
 
-  const token = createToken();
-  const thirtyDays = 30 * 24 * 60 * 60 * 1000;
-  const expiresAt = new Date(Date.now() + thirtyDays).toISOString();
-
-  await db.query(
-    'INSERT INTO sessions (token_hash, user_id, expires_at) VALUES ($1, $2, $3)',
-    [hashToken(token), user.id, expiresAt],
-  );
+  const token = await createSession(user.id);
 
   response.json({ token, user: { id: user.id, email: user.email } });
+});
+
+// Confere os tokens que o Google entrega
+const googleClient = new OAuth2Client();
+
+// Login com Google: o front manda o "credential" que o Google gerou
+app.post('/auth/google', async (request, response) => {
+  const { credential } = request.body ?? {};
+
+  if (typeof credential !== 'string' || credential === '') {
+    response.status(400).json({ error: 'credential is required' });
+    return;
+  }
+
+  const clientId = process.env.GOOGLE_CLIENT_ID;
+
+  if (!clientId) {
+    response.status(503).json({ error: 'google login is not configured' });
+    return;
+  }
+
+  // Pergunta ao Google se o token é verdadeiro e foi feito para este app
+  let email: string | undefined;
+
+  try {
+    const ticket = await googleClient.verifyIdToken({
+      idToken: credential,
+      audience: clientId,
+    });
+    const payload = ticket.getPayload();
+
+    if (payload?.email && payload.email_verified) {
+      email = payload.email.toLowerCase();
+    }
+  } catch {
+    email = undefined;
+  }
+
+  if (!email) {
+    response.status(401).json({ error: 'invalid google account' });
+    return;
+  }
+
+  // Se o email ainda não tem conta, cria uma (sem senha)
+  const existing = await db.query<{ id: string }>(
+    'SELECT id FROM users WHERE email = $1',
+    [email],
+  );
+  let userId = existing.rows[0]?.id;
+
+  if (!userId) {
+    userId = randomUUID();
+    await db.query(
+      'INSERT INTO users (id, email, password_hash, created_at) VALUES ($1, $2, NULL, $3)',
+      [userId, email, new Date().toISOString()],
+    );
+  }
+
+  const token = await createSession(userId);
+
+  response.json({ token, user: { id: userId, email } });
 });
 
 // Faz logout: apaga a sessão, e o token para de funcionar

@@ -72,6 +72,14 @@ export function login(email: string, password: string) {
   });
 }
 
+// Troca o "credential" do Google por um token da nossa API
+export function loginWithGoogle(credential: string) {
+  return request<LoginResponse>('/auth/google', {
+    method: 'POST',
+    body: JSON.stringify({ credential }),
+  });
+}
+
 export function logout(token: string) {
   return request<void>('/auth/logout', { method: 'POST' }, token);
 }

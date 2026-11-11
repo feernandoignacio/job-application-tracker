@@ -130,6 +130,21 @@ describe('login', () => {
   });
 });
 
+describe('google login', () => {
+  test('rejects a request without credential', async () => {
+    const { status } = await api('POST', '/auth/google', {});
+    assert.equal(status, 400);
+  });
+
+  test('rejects a fake credential', async () => {
+    const { status } = await api('POST', '/auth/google', {
+      credential: 'fake-credential',
+    });
+    // 503 quando o Google não está configurado (como no CI), 401 quando está
+    assert.ok(status === 401 || status === 503);
+  });
+});
+
 describe('applications', () => {
   test('require a valid token', async () => {
     const noToken = await api('GET', '/applications');

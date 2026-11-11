@@ -8,7 +8,7 @@ A full stack web application to organize and track job applications. Each user c
 
 ## Features
 
-- Sign up and log in with email and password
+- Sign up and log in with email and password, or continue with Google
 - Add applications with company, position, status and job link
 - Change the status of an application directly from its card
 - Edit the details of an application and keep notes for each one
@@ -53,6 +53,7 @@ The front end calls `/api/...` and Vercel forwards these requests to the API. In
 
 ## Security
 
+- Google sign in sends an ID token that the API verifies with Google before creating the session
 - Passwords are hashed with **scrypt** and a random salt, so they are never stored in plain text
 - Login returns a random session token. Only its **SHA-256 hash** is stored in the database
 - Sessions expire after 30 days, and logging out deletes the session
@@ -69,6 +70,7 @@ The front end calls `/api/...` and Vercel forwards these requests to the API. In
 | GET    | `/health`           | No   | Checks if the API is running  |
 | POST   | `/auth/register`    | No   | Creates an account            |
 | POST   | `/auth/login`       | No   | Returns a session token       |
+| POST   | `/auth/google`      | No   | Logs in with a Google account |
 | POST   | `/auth/logout`      | Yes  | Deletes the current session   |
 | GET    | `/applications`     | Yes  | Lists the user's applications |
 | POST   | `/applications`     | Yes  | Creates an application        |
@@ -89,7 +91,7 @@ cd job-application-tracker
 ```bash
 cd api
 npm install
-cp .env.example .env   # then paste your database URL in .env
+cp .env.example .env   # then paste your database URL (and Google client ID) in .env
 npm run dev
 ```
 
@@ -133,5 +135,5 @@ job-application-tracker/
 - [x] Notes for each application
 - [x] Limit login attempts
 - [x] Automated tests and CI
-- [ ] Sign in with Google
+- [x] Sign in with Google
 - [ ] New visual design

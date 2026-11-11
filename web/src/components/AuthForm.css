@@ -65,3 +65,27 @@
   font-size: 0.85rem;
   color: #b42318;
 }
+
+/* Linha com "or" entre o login normal e o do Google */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.8rem;
+  color: rgba(31, 31, 31, 0.5);
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+/* Centraliza o botão que o Google desenha */
+.google-button {
+  display: flex;
+  justify-content: center;
+  min-height: 44px;
+}

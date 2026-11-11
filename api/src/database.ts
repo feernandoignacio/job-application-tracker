@@ -20,6 +20,11 @@ await db.query(`
   )
 `);
 
+// Quem entra pelo Google não tem senha, então a senha pode ficar vazia
+await db.query(`
+  ALTER TABLE users ALTER COLUMN password_hash DROP NOT NULL
+`);
+
 await db.query(`
   CREATE TABLE IF NOT EXISTS sessions (
     token_hash TEXT PRIMARY KEY,

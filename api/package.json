@@ -15,6 +15,7 @@
   "type": "module",
   "dependencies": {
     "express": "^5.3.0",
+    "google-auth-library": "^11.3.4",
     "pg": "^8.23.1"
   },
   "devDependencies": {

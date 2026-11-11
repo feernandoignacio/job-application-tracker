@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { login, register } from '../api';
+import GoogleButton from './GoogleButton';
 import './AuthForm.css';
 
 type AuthFormProps = {
@@ -73,6 +74,8 @@ function AuthForm({ onLogin }: AuthFormProps) {
       <button type="submit" disabled={loading}>
         {loading ? 'Please wait...' : mode === 'login' ? 'Log in' : 'Sign up'}
       </button>
+
+      <GoogleButton onLogin={onLogin} onError={setError} />
 
       <button type="button" className="auth-toggle" onClick={toggleMode}>
         {mode === 'login'
