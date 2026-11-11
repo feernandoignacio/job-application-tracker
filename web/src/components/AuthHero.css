@@ -7,8 +7,8 @@
   justify-content: center;
   /* Os espaços acompanham a altura da tela, para tudo caber sem rolagem */
   gap: clamp(14px, 4vh, 40px);
-  margin: clamp(10px, 2.5vh, 20px) 0 clamp(10px, 2.5vh, 20px)
-    clamp(10px, 2.5vh, 20px);
+  /* Pouco espaço em cima e embaixo: o bloco quase encosta nas bordas da tela */
+  margin: 6px 0 6px clamp(10px, 2.5vh, 20px);
   /* Em telas grandes o conteúdo se afasta da borda, sem ficar colado à esquerda */
   padding: clamp(20px, 6vh, 56px) 96px clamp(20px, 6vh, 56px)
     clamp(48px, 8vw, 160px);
