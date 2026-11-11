@@ -2,15 +2,16 @@
 .auth-form {
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  padding: 32px;
+  /* Espaços menores em telas baixas, para o cartão caber sem rolagem */
+  gap: clamp(10px, 2.4vh, 18px);
+  padding: clamp(20px, 4vh, 32px);
   background: #ffffff;
   border-radius: 16px;
   box-shadow: 0 6px 28px rgba(15, 39, 51, 0.1);
 }
 
 .auth-form h2 {
-  font-size: 2rem;
+  font-size: clamp(1.5rem, 4.2vh, 2rem);
   font-weight: 700;
   color: #0f2733;
 }
@@ -18,14 +19,14 @@
 .auth-form label {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: clamp(4px, 1vh, 8px);
   font-size: 0.95rem;
   font-weight: 600;
   color: #0f2733;
 }
 
 .auth-form input {
-  padding: 11px 14px;
+  padding: clamp(8px, 1.4vh, 11px) 14px;
   border: 1px solid #b9c2c7;
   border-radius: 8px;
   font: inherit;
@@ -46,7 +47,7 @@
 
 /* Botão principal: escuro quando pode enviar, cinza quando falta algo */
 .auth-submit {
-  padding: 12px;
+  padding: clamp(9px, 1.5vh, 12px);
   border: none;
   border-radius: 8px;
   background: #0f2733;
@@ -130,7 +131,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 11px 16px;
+  padding: clamp(8px, 1.4vh, 11px) 16px;
   border: 1px solid #b9c2c7;
   border-radius: 999px;
   background: #ffffff;
