@@ -3,6 +3,7 @@ import ApplicationCard from './components/ApplicationCard';
 import ApplicationForm from './components/ApplicationForm';
 import { sampleApplications } from './data/sampleApplications';
 import type { Application, ApplicationStatus } from './types/application';
+import AuthForm from './components/AuthForm';
 import './App.css';
 
 // O filtro pode ser "todos" ou um dos status
@@ -10,6 +11,9 @@ type StatusFilter = 'all' | ApplicationStatus;
 
 // Nome da "gaveta" onde a lista fica guardada no navegador
 const STORAGE_KEY = 'job-applications';
+
+// Gaveta onde fica o token de login
+const TOKEN_KEY = 'auth-token';
 
 // Lê a lista salva; se não tiver nada, usa os exemplos
 function loadApplications(): Application[] {
@@ -26,6 +30,9 @@ const filters: StatusFilter[] = [
 ];
 
 function App() {
+  // Token do usuário logado (vazio = ninguém logado)
+  const [token, setToken] = useState(() => localStorage.getItem(TOKEN_KEY));
+
   // Lista de candidaturas (começa com o que estiver salvo)
   const [applications, setApplications] =
     useState<Application[]>(loadApplications);
@@ -68,6 +75,26 @@ function App() {
   // Adiciona a nova candidatura no começo da lista
   function handleAdd(newApplication: Application) {
     setApplications([newApplication, ...applications]);
+  }
+
+  // Guarda o token quando o login dá certo
+  function handleLogin(newToken: string) {
+    localStorage.setItem(TOKEN_KEY, newToken);
+    setToken(newToken);
+  }
+
+  // Ninguém logado: mostra só a tela de login
+  if (!token) {
+    return (
+      <main className="app">
+        <header className="app-header">
+          <h1>Job Application Tracker</h1>
+          <p>Track every job application in one place.</p>
+        </header>
+
+        <AuthForm onLogin={handleLogin} />
+      </main>
+    );
   }
 
   return (
