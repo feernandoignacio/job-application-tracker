@@ -29,6 +29,9 @@ export const translations = {
     namePlaceholder: 'Enter your name',
     emailPlaceholder: 'Enter your email',
     passwordPlaceholder: 'Enter your password',
+    forgotPassword: 'Forgot your password?',
+    forgotPasswordHelp:
+      'If your email is a Google account, use "Continue with Google" with the same email to get back into your account.',
     newPasswordPlaceholder: 'At least 8 characters',
     continue: 'Continue',
     pleaseWait: 'Please wait...',
@@ -115,6 +118,9 @@ export const translations = {
     namePlaceholder: 'Digite seu nome',
     emailPlaceholder: 'Digite seu e-mail',
     passwordPlaceholder: 'Digite sua senha',
+    forgotPassword: 'Esqueceu a senha?',
+    forgotPasswordHelp:
+      'Se o seu e-mail é uma conta Google, use "Continuar com o Google" com o mesmo e-mail para entrar de novo na sua conta.',
     newPasswordPlaceholder: 'Pelo menos 8 caracteres',
     continue: 'Continuar',
     pleaseWait: 'Aguarde...',

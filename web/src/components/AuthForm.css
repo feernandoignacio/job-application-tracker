@@ -103,6 +103,39 @@
   text-decoration: underline;
 }
 
+/* Senha + link "Esqueceu a senha?" ficam juntinhos */
+.password-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.forgot-password {
+  align-self: flex-end;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #2a6f8f;
+  cursor: pointer;
+}
+
+.forgot-password:hover {
+  text-decoration: underline;
+}
+
+/* Caixinha com a explicação de como recuperar o acesso */
+.auth-help {
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #eef6f9;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: #0f2733;
+}
+
 .auth-error {
   font-size: 0.85rem;
   color: #b42318;

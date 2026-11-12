@@ -21,6 +21,8 @@ function AuthForm({ onLogin }: AuthFormProps) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  // Mostra a explicação de "Esqueceu a senha?"
+  const [showHelp, setShowHelp] = useState(false);
 
   const isRegister = mode === 'register';
 
@@ -58,6 +60,7 @@ function AuthForm({ onLogin }: AuthFormProps) {
   function toggleMode() {
     setMode(isRegister ? 'login' : 'register');
     setError('');
+    setShowHelp(false);
   }
 
   return (
@@ -94,22 +97,41 @@ function AuthForm({ onLogin }: AuthFormProps) {
           />
         </label>
 
-        <label>
-          {t('password')}
-          <input
-            type="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            placeholder={
-              isRegister
-                ? t('newPasswordPlaceholder')
-                : t('passwordPlaceholder')
-            }
-            autoComplete={isRegister ? 'new-password' : 'current-password'}
-            minLength={8}
-            required
-          />
-        </label>
+        {/* Campo de senha com o link "Esqueceu a senha?" logo abaixo, à direita */}
+        <div className="password-field">
+          <label>
+            {t('password')}
+            <input
+              type="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              placeholder={
+                isRegister
+                  ? t('newPasswordPlaceholder')
+                  : t('passwordPlaceholder')
+              }
+              autoComplete={isRegister ? 'new-password' : 'current-password'}
+              minLength={8}
+              required
+            />
+          </label>
+
+          {!isRegister && (
+            <button
+              type="button"
+              className="forgot-password"
+              onClick={() => setShowHelp(!showHelp)}
+              aria-expanded={showHelp}
+            >
+              {t('forgotPassword')}
+            </button>
+          )}
+        </div>
+
+        {/* Explica como recuperar o acesso */}
+        {!isRegister && showHelp && (
+          <p className="auth-help">{t('forgotPasswordHelp')}</p>
+        )}
 
         {error && <p className="auth-error">{error}</p>}
 
